@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Selene Nav · Lunar landing site navigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c1322; --panel:#131c2e; --panel2:#0f1727; --line:#223049; --text:#edf1f7; --muted:#8e9ab0;
+  --sun:#ffd24a; --sunp:#e08a2e; --dark:#1a2336; --earth:#4fd1ff; --ok:#3fd193; --warn:#f5b83d; --bad:#f06a6a;
+  --accent:#a9bfff; --rego:#9a9488; --radius:14px; --disp:"Chakra Petch",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{background:radial-gradient(1200px 500px at 80% -10%,#1b2a4a55,transparent 60%),var(--bg)}
+h1,h2,h3,h4,.disp{font-family:var(--disp)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button,select,input{font:inherit;color:inherit}
+header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0e1525,#0a0e16)}
+.brand{display:flex;gap:12px;align-items:center}
+.brand svg{flex:none}
+.brand h1{font-size:20px;margin:0;font-weight:700;letter-spacing:.3px}
+.brand p{margin:0;color:var(--muted);font-size:12.5px}
+.hdr-right{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:var(--panel2)}
+.badge .dot{width:8px;height:8px;border-radius:50%}
+.seg{display:inline-flex;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:999px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:#22304a;color:var(--text)}
+.btn{border:1px solid var(--line);background:var(--panel);padding:7px 12px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:#34445f}
+.btn.primary{background:#2a3d66;border-color:#3a5288}
+.btn.small{padding:4px 9px;font-size:12.5px}
+main{max-width:1320px;margin:0 auto;padding:20px 24px 60px;display:grid;gap:20px}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.sec-h{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+.sec-h h2{font-size:18px;margin:0;font-weight:600;display:flex;align-items:center}
+.sec-h .sub{color:var(--muted);font-size:12.5px}
+.hint{color:var(--muted);font-size:12.5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:14px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;cursor:pointer;position:relative}
+.card.ativo{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.card .tag{position:absolute;top:-9px;left:12px;font-size:11px;background:var(--accent);color:#0a0e16;padding:1px 8px;border-radius:999px;font-weight:600}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card select,.card input[type=date],.ctrl select,.ctrl input[type=number]{background:#0a101b;border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-width:0}
+.card select{flex:1}
+.status{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;padding:3px 10px;border-radius:999px}
+.status.ok{background:#123826;color:var(--ok)}.status.warn{background:#3a2f0f;color:var(--warn)}.status.bad{background:#3b1717;color:var(--bad)}
+.agora{display:grid;gap:6px;font-size:13px}
+.agora .l{display:flex;gap:8px;align-items:flex-start}
+.ico{width:10px;height:10px;border-radius:50%;margin-top:5px;flex:none}
+.cd{color:var(--muted)}
+.cd b{color:var(--text);font-variant-numeric:tabular-nums}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.m{background:#0a101b;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.m .v{font-size:16px;font-weight:650;font-variant-numeric:tabular-nums}
+.m .k{font-size:11px;color:var(--muted)}
+.slip{display:grid;gap:2px}
+.slip input{width:100%}
+.slip .hint{display:flex;justify-content:space-between}
+.frase{font-size:13px;color:#c9d2e3;background:#0a101b;border-left:3px solid var(--accent);padding:7px 10px;border-radius:0 8px 8px 0}
+.reasons{font-size:12px;color:var(--muted);margin:0;padding-left:16px}
+.addcard{display:flex;align-items:center;justify-content:center;border:1px dashed #2b3950;border-radius:10px;min-height:140px;color:var(--muted);cursor:pointer;background:none}
+.addcard:hover{border-color:var(--accent);color:var(--text)}
+.panowrap{position:relative}
+#pano{width:100%;display:block;border-radius:10px;background:#05070c}
+.tip{position:absolute;pointer-events:none;background:#0b1220ee;border:1px solid var(--line);padding:6px 8px;border-radius:7px;font-size:12px;display:none;white-space:nowrap}
+.timectl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.timectl input[type=range]{flex:1;min-width:200px}
+.clock{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;min-width:250px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:8px;border-radius:2px;display:inline-block}
+#tl{width:100%;display:block}
+.ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.ctrl label{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+.ctrl input[type=number],.ctrl select{color:var(--text)}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:13px}
+.switch input{accent-color:var(--accent);width:16px;height:16px}
+#heat{width:100%;display:block;cursor:pointer}
+.top{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:12px}
+.top .m{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.explica{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.explica article{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px}
+.explica h3{margin:0 0 6px;font-size:14px}
+.explica p{margin:6px 0;color:#c9d2e3;font-size:13px}
+.big{font-size:22px;font-weight:700}
+.only-plan,.only-exp{}
+body.exp .only-plan{display:none!important}
+body.plan .only-exp{display:none!important}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:10}
+.modal.on{display:flex}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;width:min(420px,92vw);display:grid;gap:10px}
+.modal input{background:#0a101b;border:1px solid var(--line);border-radius:7px;padding:7px 9px;width:100%}
+.warnbox{background:#2a2310;border:1px solid #5a4a16;color:#f3dc9a;padding:8px 12px;border-radius:8px;font-size:12.5px}
+.intro{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.conceito{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.conceito .em{font-size:24px;line-height:1}
+.conceito b{display:block;margin-bottom:2px}
+.conceito span{color:#c3cbda;font-size:13px}
+.sec-h h2 .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#22304a;color:var(--accent);font-size:12px;margin-right:8px}
+.oque{margin:-4px 0 12px;color:#c3cbda;font-size:13px;max-width:900px}
+.agora .t{font-weight:600}
+.agora .det{color:var(--muted);font-size:12px}
+.status{cursor:help}
+.porque{font-size:12px;color:#c3cbda;margin:0;padding-left:16px}
+.chip{position:absolute;top:10px;left:50px;background:#0b1220e6;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px;display:flex;gap:12px}
+.tour-back{position:fixed;inset:0;z-index:20;display:none}
+.tour-back.on{display:block}
+.tour-hl{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(3,6,12,.72);border:2px solid var(--accent);transition:all .3s ease;pointer-events:none;z-index:21}
+.tour-box{position:fixed;z-index:22;width:min(360px,92vw);background:#16203a;border:1px solid #33456e;border-radius:12px;padding:14px 16px;box-shadow:0 12px 40px #000a;transition:top .3s ease,left .3s ease}
+.tour-box h4{margin:0 0 6px;font-size:15px}
+.tour-box p{margin:0 0 12px;color:#d3daea;font-size:13.5px}
+.tour-box .pe{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tour-box .pg{color:var(--muted);font-size:12px}
+.boas{position:fixed;inset:0;z-index:25;background:rgba(3,6,12,.82);display:none;align-items:center;justify-content:center;padding:16px}
+.boas.on{display:flex}
+.boas .box{background:var(--panel);border:1px solid #2a3a5c;border-radius:16px;padding:24px;width:min(560px,96vw);display:grid;gap:14px;max-height:94vh;overflow:auto}
+.boas h2{margin:0;font-size:21px}
+.boas .need{display:grid;gap:10px}
+.boas .need div{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
+.boas .need .em{font-size:24px}
+.boas p{margin:0;color:#c9d2e3;font-size:14px}
+.gl dt{font-weight:600;margin-top:8px;font-size:13px}
+.gl dd{margin:2px 0 0;color:#c9d2e3;font-size:13px}
+/* ---- v3: painel visual ---- */
+.resultado{display:flex;gap:14px;align-items:center;background:linear-gradient(90deg,#1a2a1f,#132033 70%);border:1px solid #2c4a3a;border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.resultado .tr{font-size:26px}
+.resultado b{font-family:var(--disp);font-size:16px}
+.resultado span{color:#c9d4e4;font-size:13px}
+.resultado.neutro{background:linear-gradient(90deg,#2a1d1d,#132033 70%);border-color:#4a2c2c}
+.card{gap:12px;padding:16px;background:linear-gradient(180deg,#141e32,#0f1727)}
+.veredito{display:flex;gap:10px;align-items:center;border-radius:10px;padding:9px 12px}
+.veredito .vi{font-family:var(--disp);font-size:20px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.veredito b{display:block;font-family:var(--disp);font-size:15px;font-weight:600}
+.veredito small{display:block;color:#c9d4e4;font-size:12px;line-height:1.35}
+.veredito.ok{background:#12301f;border:1px solid #23573a}.veredito.ok .vi{background:var(--ok);color:#06180f}
+.veredito.warn{background:#33280d;border:1px solid #5e4a17}.veredito.warn .vi{background:var(--warn);color:#2a1d00}
+.veredito.bad{background:#361616;border:1px solid #643030}.veredito.bad .vi{background:var(--bad);color:#2a0606}
+.aneis{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;text-align:center}
+.anel .al{font-size:11.5px;color:var(--muted);line-height:1.25;margin-top:2px}
+.pills{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pill{display:flex;gap:8px;align-items:center;border-radius:10px;padding:8px 10px;border:1px solid var(--line);background:#0c1322}
+.pill .em{font-size:20px;filter:grayscale(1) opacity(.5)}
+.pill b{display:block;font-size:12.5px;line-height:1.25}
+.pill small{display:block;font-size:11.5px;color:var(--muted)}
+.pill.sol.on{border-color:#6b5520;background:#2a2210}.pill.ter.on{border-color:#24476e;background:#0f2238}
+.pill.on .em{filter:none}
+.extras{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.lbl-dt{font-size:11.5px;color:var(--muted)}
+#pano{border:1px solid #1e2a42}
+.tlwrap{overflow:hidden}
+.cal{display:grid;gap:3px;margin-top:4px}
+.cal .mes{display:grid;grid-template-columns:48px repeat(31,1fr);gap:3px;align-items:center}
+.cal .ml{font-size:12px;color:var(--muted);font-family:var(--disp)}
+.cal .d{height:16px;border-radius:3px;cursor:pointer;min-width:0;border:0;padding:0}
+.cal .d:hover{outline:2px solid #fff6}
+.cal .d.sel{outline:2px solid #fff}
+.cal .d.vz{visibility:hidden}
+.cal .d.na{background:#151c2a;cursor:not-allowed}
+.calhead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.escala{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.escala i{width:16px;height:12px;border-radius:3px;display:inline-block}
+.seg.lang button{padding:5px 10px;font-weight:600;font-size:12.5px}
+.anos .btn.on{background:#22304a;border-color:#3a5288}
+.atraso{background:#0c1322;border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:8px}
+.atraso h4{margin:0;font-size:13.5px;font-weight:600}
+.atraso .bts{display:flex;flex-wrap:wrap;gap:6px}
+.atraso .bts button{border:1px solid var(--line);background:#131c2e;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.atraso .bts button.on{background:#2a3d66;border-color:#4a66a8}
+.atraso input[type=range]{width:100%}
+.compara{display:grid;gap:4px;font-size:12.5px}
+.compara .ln{display:flex;justify-content:space-between;gap:8px}
+.compara .dl{font-weight:600;font-variant-numeric:tabular-nums}
+.compara .up{color:var(--ok)}.compara .dn{color:var(--bad)}.compara .eq{color:var(--muted)}
+.mapawrap{display:grid;grid-template-columns:minmax(260px,560px) 1fr;gap:18px;align-items:start}
+@media (max-width:860px){.mapawrap{grid-template-columns:1fr}}
+#mapa{width:100%;display:block;border-radius:12px;background:#0a1120;border:1px solid #1e2a42}
+.ranking{display:grid;gap:6px;max-height:560px;overflow:auto}
+.rk{display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center;background:#0f1727;border:1px solid var(--line);border-radius:9px;padding:7px 10px;cursor:pointer;text-align:left;width:100%}
+.rk:hover{border-color:#3a5288}.rk.on{border-color:var(--accent)}
+.rk .dt{width:12px;height:12px;border-radius:50%}
+.rk b{font-size:13px;font-weight:500}.rk small{color:var(--muted);font-size:11.5px;display:block}
+.rk .nums{font-size:12px;color:#c9d4e4;white-space:nowrap;font-variant-numeric:tabular-nums}
+.solbox{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:stretch;margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:760px){.solbox{grid-template-columns:1fr}}
+.solread{background:#0f1727;border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px;align-content:start}
+.solread .gr{font-family:var(--disp);font-size:34px;font-weight:700;color:var(--sun);line-height:1}
+.solread small{color:var(--muted);font-size:12px}
+#solgraf{width:100%;display:block}
+.vt{display:grid;gap:6px}
+.vtl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;background:#0f1727;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:13px}
+.vtl .bd{font-family:var(--disp);font-size:12px;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.bd.ok{background:#12301f;color:var(--ok)}.bd.falhou{background:#361616;color:var(--bad)}.bd.pend{background:#1d2840;color:var(--muted)}
+.vtl small{display:block;color:var(--muted);font-size:12px}
+.lim{margin:6px 0 0;padding-left:18px;color:#c9d4e4;font-size:13px;display:grid;gap:4px}
+/* ---- tela de entrada: Lua 3D ---- */
+body.intro{overflow:hidden}
+.inicio{position:fixed;inset:0;z-index:12;background:#02040a;display:none}
+body.intro .inicio{display:block}
+#globo{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:grab}
+#globo.arrasta{cursor:grabbing}#globo.pin{cursor:pointer}
+.ini-txt{position:absolute;left:clamp(16px,4vw,56px);top:clamp(20px,9vh,96px);max-width:min(440px,88vw);display:grid;gap:14px;pointer-events:none}
+.ini-txt>*{pointer-events:auto}
+.ini-txt h1{margin:0;font-family:var(--disp);font-weight:700;font-size:clamp(34px,5.4vw,62px);line-height:1;letter-spacing:-.5px}
+.ini-txt p{margin:0;color:#c3cbda;font-size:clamp(14px,1.4vw,16.5px);line-height:1.55}
+.btn.grande{padding:11px 20px;font-size:15px;font-weight:600;border-radius:999px}
+.ini-leg{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12.5px;color:#aab4c6}
+.ini-leg span{display:inline-flex;align-items:center;gap:7px}
+.ini-leg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.ini-marca{position:absolute;top:18px;right:20px;display:flex;gap:8px;align-items:center;z-index:2}
+.ini-dica{position:absolute;left:50%;transform:translateX(-50%);bottom:96px;color:#8e9ab0;font-size:13px;transition:opacity .6s;pointer-events:none}
+.ini-nav{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;overflow-x:auto;padding:12px 16px 16px;background:linear-gradient(transparent,#02040af0 45%);scrollbar-width:thin}
+.ini-nav button{flex:none;display:grid;gap:1px;text-align:left;background:#0e1626e6;border:1px solid #ffffff1c;border-left:3px solid var(--c);border-radius:10px;padding:7px 12px;cursor:pointer;min-width:120px}
+.ini-nav button b{font-family:var(--disp);font-size:13.5px;font-weight:600}
+.ini-nav button small{color:#8e9ab0;font-size:11.5px}
+.ini-nav button.on,.ini-nav button:hover{background:#1a2742}
+.ini-painel{position:absolute;top:0;right:0;bottom:0;width:min(420px,100%);background:#0b1220f2;border-left:1px solid #ffffff1c;padding:28px 24px 24px;overflow-y:auto;transform:translateX(105%);transition:transform .4s cubic-bezier(.2,.8,.2,1);z-index:3;display:grid;gap:12px;align-content:start}
+.ini-painel.on{transform:none}
+.ini-painel .x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:1px solid #ffffff2a;background:none;cursor:pointer;font-size:18px}
+.ini-painel h2{margin:4px 40px 0 0;font-family:var(--disp);font-size:28px;line-height:1.05}
+.ini-painel .etq{justify-self:start;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
+.ini-painel p{margin:0;color:#d0d7e4;line-height:1.6;font-size:14.5px}
+.ini-painel .coord{color:#8e9ab0;font-size:13px}
+.ini-res{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:8px;background:#0f1727}
+.ini-res .lin{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px}
+@media (max-width:720px){.ini-leg{display:none}.ini-painel{top:auto;height:70%;width:100%;border-left:0;border-top:1px solid #ffffff1c;border-radius:18px 18px 0 0;transform:translateY(105%)}.ini-txt{top:64px}.ini-dica{bottom:92px}}
+@media (prefers-reduced-motion:reduce){.ini-painel{transition:none}}
+footer{max-width:1320px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12px}
+footer a{color:var(--accent)}
+.copyout{width:100%;min-height:120px;background:#0a101b;color:var(--text);border:1px solid var(--line);border-radius:8px;font:12px ui-monospace,monospace;padding:8px;display:none}
+@media (max-width:640px){header,main{padding-left:14px;padding-right:14px}.metrics{grid-template-columns:repeat(2,1fr)}}
+
+.marca{font:800 26px/1 var(--disp);letter-spacing:-.03em}
+.marca::after{content:"";display:inline-block;width:.32em;height:.32em;border-radius:50%;background:var(--sun);margin-left:.08em;vertical-align:.05em}
+.ini-marca-txt{font-size:22px;color:var(--ink);opacity:.92;margin-bottom:6px}
+/* ==== v8: identidade visual do grupo (Navegador de Pousos Lunares) ==== */
+:root{
+  --bg:#05070d; --ink:#eef1f7; --text:#eef1f7; --mute:#9aa4b8; --muted:#9aa4b8; --line:#ffffff1f;
+  --panel:#0b101c; --panel2:#0b101c; --sun:#ffd24a; --sunp:#e8913a; --earth:#4fd1ff; --crew:#ff6a3d;
+  --ok:#3ddc84; --warn:#ffb347; --bad:#ff5c5c; --dark:#151b28; --accent:#ff6a3d;
+  --disp:"Bricolage Grotesque",system-ui,sans-serif;
+}
+html,body{font:15px/1.55 "Figtree",system-ui,sans-serif;background:var(--bg)}
+body{background:var(--bg)}
+h1,h2,h3,h4,.disp{font-family:var(--disp)}
+::selection{background:#ff6a3d55}
+header{background:none;border-bottom:1px solid var(--line);padding:20px 32px}
+.brand h1{font:800 26px/1 var(--disp);letter-spacing:-.03em}
+.brand p{font-size:13.5px;margin-top:6px;color:var(--mute)}
+main{max-width:1240px;padding:6px 32px 90px;gap:0}
+section.panel{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:40px 0 36px}
+main > .intro + section.panel, main > .warnbox + .intro + section.panel{border-top:0}
+.sec-h{margin-bottom:10px;align-items:flex-end}
+.sec-h h2{font:800 clamp(24px,2.7vw,32px)/1.08 var(--disp);letter-spacing:-.02em}
+.sec-h h2 .num{background:none;width:auto;height:auto;border-radius:0;color:var(--crew);font:inherit;margin-right:12px}
+.sec-h .sub{font-size:13.5px}
+.oque{font-size:15.5px;line-height:1.6;color:#c9d1e0;max-width:70ch;margin:0 0 22px}
+.hint{color:var(--mute)}
+/* botões */
+.btn{border-radius:99px;border:1px solid var(--line);background:transparent;font:600 13.5px "Figtree",sans-serif;padding:8px 15px}
+.btn:hover{background:#ffffff0d;border-color:#ffffff38}
+.btn.small{padding:6px 12px;font-size:13px}
+.btn.primary{background:var(--ink);color:#05070d;border-color:transparent}
+.btn.primary:hover{background:#fff}
+.btn.grande{padding:11px 20px;font-size:15px;font-weight:700}
+/* abas Explorar / Planejar (estilo de abas sublinhadas) */
+.seg:not(.lang){background:none;border:0;border-radius:0;padding:0;gap:2px}
+.seg:not(.lang) button{border-radius:0;border-bottom:2px solid transparent;padding:7px 10px;font:600 14px "Figtree",sans-serif;color:var(--mute)}
+.seg:not(.lang) button.on{background:none;color:var(--ink);border-bottom-color:var(--crew)}
+.seg.lang{background:none;border:1px solid var(--line);border-radius:99px;padding:2px}
+.seg.lang button{border-radius:99px;padding:4px 10px;color:var(--mute)}
+.seg.lang button.on{background:var(--ink);color:#05070d}
+.badge{background:#0b101c99;border:1px solid var(--line);font:600 12.5px "Figtree",sans-serif;padding:6px 12px}
+/* avisos e conceitos: faixa lateral */
+.warnbox{background:none;border:0;border-left:3px solid var(--warn);border-radius:0;color:#e5d3ab;padding:2px 0 2px 14px;margin-top:22px;font-size:13.5px}
+.intro{gap:28px;padding:30px 0 34px}
+.conceito{background:none;border:0;border-left:3px solid var(--c,#9aa4b8);border-radius:0;padding:2px 0 2px 14px}
+.conceito:nth-child(1){--c:var(--sun)}.conceito:nth-child(2){--c:var(--earth)}.conceito:nth-child(3){--c:#8d8d8b}
+.conceito .em{display:none}
+.conceito b{font:700 17px var(--disp);margin-bottom:4px}
+.conceito span{font-size:14px;line-height:1.5}
+/* placar */
+.resultado{background:none;border:0;border-left:3px solid var(--ok);border-radius:0;padding:2px 0 2px 16px;margin-bottom:22px}
+.resultado.neutro{background:none;border-left-color:var(--bad)}
+.resultado b{font:700 19px/1.25 var(--disp);letter-spacing:-.01em}
+.resultado span{font-size:14px}
+/* cartões */
+.cards{gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;gap:14px}
+.card.ativo{border-color:#ffffff59;box-shadow:none}
+.card .tag{background:var(--ink);color:#05070d;font:700 11px "Figtree",sans-serif;padding:2px 9px}
+.card select,.card input[type=date],.ctrl select,.ctrl input[type=number]{background:#111827;border:1px solid var(--line);border-radius:8px;font:500 14px "Figtree",sans-serif}
+.card select{font-weight:600;font-size:15px}
+.veredito{border:0;border-left:3px solid var(--c);border-radius:0 10px 10px 0;background:#ffffff0d;padding:10px 14px}
+.veredito.ok,.veredito.warn,.veredito.bad{background:#ffffff0d;border-width:0 0 0 3px}
+.veredito.ok{--c:var(--ok)}.veredito.warn{--c:var(--warn)}.veredito.bad{--c:var(--bad)}
+.veredito .vi{display:none}
+.veredito b{font:700 16px var(--disp);color:var(--c)}
+.veredito small{color:#c9d1e0;font-size:12.5px}
+.anel .al{font-size:12px;color:var(--mute)}
+.pills{gap:8px}
+.pill{border:0;border-left:3px solid #ffffff26;border-radius:0 10px 10px 0;background:#ffffff08;padding:8px 11px}
+.pill .em{display:none}
+.pill.sol.on{border-left-color:var(--sun);background:#ffd24a12}
+.pill.ter.on{border-left-color:var(--earth);background:#4fd1ff12}
+.pill b{font:700 13.5px var(--disp)}
+.m{background:none;border:1px solid var(--line);border-radius:10px}
+.m .v{font-family:var(--disp);font-weight:700}
+.atraso{background:none;border:1px solid var(--line);border-radius:12px}
+.atraso h4{font:700 15px var(--disp)}
+.atraso .bts button{background:none;border:1px solid var(--line);font:500 12.5px "Figtree",sans-serif;color:var(--ink)}
+.atraso .bts button.on{background:var(--ink);color:#05070d;border-color:transparent}
+.frase{background:none;border-left:3px solid var(--line);border-radius:0;padding:2px 0 2px 12px;color:#c9d1e0;font-size:13.5px}
+.porque{color:#c9d1e0}
+.addcard{border-radius:14px;border-color:#ffffff2a;font:600 14px "Figtree",sans-serif}
+.addcard:hover{border-color:#ffffff66}
+.lbl-dt{font-size:12.5px}
+/* marcadores Sol/Terra */
+.pt{display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 5px 1px 0;vertical-align:middle}
+.pt.sol{background:var(--sun)}.pt.ter{background:var(--earth)}.pt.off{background:#ffffff33}
+.melhor{font:700 11px "Figtree",sans-serif;color:#05070d;background:var(--ok);border-radius:99px;padding:1px 7px;vertical-align:2px}
+/* mapa e listas */
+#mapa,#pano{border:1px solid var(--line);border-radius:12px;background:#05070d}
+.rk{background:none;border:0;border-left:3px solid transparent;border-radius:0 10px 10px 0;padding:8px 12px}
+.rk:hover{background:#ffffff0a;border-color:transparent;border-left-color:#ffffff38}
+.rk.on{background:#ffffff0d;border-left-color:var(--ink)}
+.rk b{font:600 14px "Figtree",sans-serif}
+.chip{background:#05070dd9;border:1px solid var(--line);font-size:13px}
+.legend{font-size:12.5px}
+.solbox{border-top:1px solid var(--line);margin-top:28px;padding-top:24px}
+.solread{background:none;border:0;border-left:3px solid var(--sun);border-radius:0;padding:4px 0 4px 16px}
+.solread .gr{font:800 40px/1 var(--disp);color:var(--sun)}
+#solTitulo{font:700 18px var(--disp)!important}
+.cal .ml{font-family:"Figtree",sans-serif;font-weight:600}
+.cal .d{border-radius:2px}
+.anos .btn.on{background:var(--ink);color:#05070d;border-color:transparent}
+.top .m{border:0;border-left:3px solid var(--line);border-radius:0 10px 10px 0;background:#ffffff08}
+.top .m:first-child{border-left-color:var(--ok)}
+/* explicações e validação */
+.explica{gap:28px}
+.explica article{background:none;border:0;border-top:2px solid var(--line);border-radius:0;padding:16px 0 0}
+.explica article:nth-child(1){border-top-color:var(--sun)}.explica article:nth-child(3){border-top-color:var(--earth)}
+.explica h3{font:700 19px/1.2 var(--disp);letter-spacing:-.01em}
+.big{font-family:var(--disp);font-weight:800}
+.vtl{background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:10px 0}
+.vt{gap:0}
+.lim li{list-style:none;border-left:3px solid var(--line);background:#ffffff08;border-radius:0 10px 10px 0;padding:10px 14px}
+.lim{padding-left:0;gap:8px;margin-top:12px}
+.ctrl label{font-size:13px}
+/* tela de entrada, boas-vindas, tour */
+.inicio{background:var(--bg)}
+.ini-txt h1{font:800 clamp(38px,5.6vw,66px)/.98 var(--disp);letter-spacing:-.03em}
+.ini-txt p{font-size:clamp(15px,1.4vw,17px)}
+.ini-leg i{width:9px;height:9px}
+.ini-nav{background:linear-gradient(transparent,#05070dee 40%)}
+.ini-nav button{background:#0b101cd9;border:1px solid var(--line);border-left:3px solid var(--c);border-radius:10px}
+.ini-nav button b{font:700 15px var(--disp)}
+.ini-nav button.on,.ini-nav button:hover{background:#1a2338}
+.ini-painel{background:#0b101cf0;backdrop-filter:blur(14px);border-left:1px solid var(--line)}
+.ini-painel h2{font:800 34px/1.05 var(--disp);letter-spacing:-.02em}
+.ini-painel .etq{font:600 12px "Figtree",sans-serif}
+.ini-res{background:none;border:0;padding:0}
+.boas .box{background:#0b101c;border:1px solid var(--line);border-radius:16px}
+.boas h2{font:800 30px/1.05 var(--disp);letter-spacing:-.02em}
+.boas .need div{background:none;border:0;border-left:3px solid var(--line);border-radius:0 10px 10px 0;background:#ffffff08}
+.boas .need div:first-child{border-left-color:var(--sun)}.boas .need div:last-child{border-left-color:var(--earth)}
+.boas .need .em{display:none}
+.tour-box{background:#0b101c;border:1px solid #ffffff2e;border-radius:14px}
+.tour-box h4{font:700 18px var(--disp)}
+.tour-hl{border-color:var(--ink)}
+.modal .box{background:#0b101c}
+footer{border-top:1px solid var(--line);padding-top:20px;color:var(--mute)}
+footer a{color:var(--ink)}
+@media (max-width:640px){header{padding:16px 18px}main{padding:6px 18px 70px}}
+</style>
+</head>
+<body class="exp">
+<header>
+  <div class="brand">
+    
+    <div><h1 class="marca">Selene Nav</h1><p data-i18n="hdr.sub">Navegador de locais de pouso lunar · Sol para energia, Terra para comunicação.</p></div>
+  </div>
+  <div class="hdr-right">
+    <span class="badge" id="fonteBadge"><span class="dot"></span><span></span></span>
+    <div class="seg" role="tablist" aria-label="Modo">
+      <button id="mExp" class="on" data-i18n="mExp" data-i18n-title="mExp.t">Explorar</button>
+      <button id="mPlan" data-i18n="mPlan" data-i18n-title="mPlan.t">Planejar</button>
+    </div>
+    <div class="seg lang" aria-label="Language"><button data-l="en">EN</button><button data-l="pt">PT</button></div>
+    <button class="btn small" id="verLua" data-i18n="verLua" data-i18n-title="verLua.t">Lua 3D</button>
+    <button class="btn small" id="ajuda" data-i18n="ajuda">Como usar</button>
+    <label class="btn small" data-i18n-title="carregar.t"><span data-i18n="carregar">Carregar dados reais</span><input type="file" id="arquivo" accept=".json" hidden></label>
+  </div>
+</header>
+
+<main>
+  <div class="warnbox" id="avisoDemo" style="display:none"></div>
+
+  <div class="intro only-exp">
+    <div class="conceito"><span class="em">☀️</span><div data-i18n="c1"><b>Sol = energia</b><span>O lander usa painéis solares. Sem sol, a bateria acaba e tudo congela.</span></div></div>
+    <div class="conceito"><span class="em">🌍</span><div data-i18n="c2"><b>Terra no céu = comunicação</b><span>A antena precisa "enxergar" a Terra para mandar e receber mensagens.</span></div></div>
+    <div class="conceito"><span class="em">⛰️</span><div data-i18n="c3"><b>Montanhas = sombra</b><span>No polo sul o Sol passa raspando no chão. Uma montanha pode esconder o Sol e a Terra.</span></div></div>
+  </div>
+
+  <section class="panel">
+    <div class="sec-h">
+      <h2><span class="num">1</span><span data-i18n="s1.h">Escolha onde e quando pousar</span></h2>
+    </div>
+    <p class="oque" data-i18n="s1.p">Cada cartão é um <b>plano de pouso</b>: um lugar na Lua e uma data. Compare até 4 planos. O cartão com borda clara é o que aparece nas partes 2 e 4.</p>
+    <div id="resultado"></div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section class="panel" id="secMapa">
+    <div class="sec-h">
+      <h2 id="mapaTitulo">Mapa do polo sul</h2>
+    </div>
+    <p class="oque" data-i18n="map.p">Visto de cima, com o polo sul no centro. Cada ponto é um local de pouso, colorido pelo veredito na data do plano em destaque: <b style="color:var(--ok)">verde = bom</b>, <b style="color:var(--warn)">amarelo = atenção</b>, <b style="color:var(--bad)">vermelho = não recomendado</b>. Clique num ponto ou na lista para trocar o local do plano. É a forma mais rápida de achar uma alternativa na mesma região.</p>
+    <div class="mapawrap"><div class="panowrap"><svg id="mapa" viewBox="0 0 560 560"></svg><div class="tip" id="tipMapa"></div></div><div class="ranking" id="ranking"></div></div>
+  </section>
+
+  <section class="panel">
+    <div class="sec-h">
+      <h2><span class="num">2</span><span id="panoTitulo">O céu visto do local</span></h2>
+      <label class="switch" id="relevoLbl" data-i18n-title="relevo.t"><input type="checkbox" id="relevo" checked> <span data-i18n="relevo">Considerar as montanhas (relevo real)</span></label>
+    </div>
+    <p class="oque" data-i18n="s2.p">Imagine que você está em pé no local de pouso e gira o corpo 360°. Esta faixa mostra tudo o que você veria: <b>o chão e as montanhas em cinza</b>, o céu em preto, o <b>Sol</b> (bola amarela) e a <b>Terra</b> (bola azul). Quando uma bola está atrás do cinza, ela está escondida. As linhas pontilhadas mostram o caminho que cada uma faz nos próximos dias.</p>
+    <div class="panowrap"><svg id="pano" height="360"></svg><div class="chip" id="chip"></div><div class="tip" id="tip"></div></div>
+    <div class="timectl">
+      <button class="btn small" id="play">▶ Animar</button>
+      <input type="range" id="cursor" min="0" max="336" value="0" step="1" data-i18n-aria="cursor.a">
+      <span class="clock" id="clock"></span>
+      <span class="hint" style="flex-basis:100%" data-i18n="s2.hint">Arraste a barra (ou aperte Animar) para ver os dias passando depois do pouso. N, L, S e O são norte, leste, sul e oeste.</span>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--sun)"></span><span data-i18n="lg.sol">Sol e o caminho dele</span></span>
+      <span><span class="sw" style="background:var(--earth)"></span><span data-i18n="lg.terra">Terra e o caminho dela</span></span>
+      <span><span class="sw" style="background:#3a3f4c"></span><span data-i18n="lg.relevo">Relevo ao redor do local</span></span>
+      <span id="exagero"></span>
+    </div>
+    <p class="hint only-exp" id="panoFrase"></p>
+  </section>
+
+  <section class="panel">
+    <div class="sec-h">
+      <h2><span class="num">3</span><span data-i18n="s3.h">Os dias depois do pouso</span></h2>
+      <span class="sub" id="tlSub"></span>
+    </div>
+    <p class="oque" data-i18n="s3.p">Cada plano tem duas faixas. <b>Amarelo</b> = tem sol (energia). <b>Azul</b> = dá para falar com a Terra. Escuro = não tem. A linha branca marca o momento mostrado na parte 2. Clique em qualquer ponto para pular para ele.</p>
+    <svg id="tl" height="10"></svg>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--sun)"></span><span data-i18n="lg.temsol">Tem sol</span></span>
+      <span><span class="sw" style="background:var(--sunp)"></span><span data-i18n="lg.meio">Sol meio escondido por montanha</span></span>
+      <span><span class="sw" style="background:var(--dark)"></span><span data-i18n="lg.sem">Sem sol / sem contato</span></span>
+      <span><span class="sw" style="background:var(--earth)"></span><span data-i18n="lg.fala">Dá para falar com a Terra</span></span>
+    </div>
+    <div class="solbox">
+      <div class="solread" id="solread"></div>
+      <div><h3 style="margin:0 0 4px;font-size:15px" id="solTitulo">Altura do Sol no céu</h3>
+        <p class="hint" style="margin:0 0 8px" data-i18n="sol.p">A linha amarela é a altura do Sol. A área cinza é a altura das montanhas na direção em que o Sol está. Quando a linha fica acima do cinza, tem sol nos painéis. Quanto mais alto o Sol, mais forte a luz.</p>
+        <svg id="solgraf" height="210"></svg></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="sec-h">
+      <h2><span class="num">4</span><span id="heatTitulo">Qual o melhor dia para pousar?</span></h2>
+    </div>
+    <p class="oque" data-i18n="s4.p">Cada quadradinho é um dia em que você poderia pousar. <b>Verde claro = ótimo</b> (muito sol e contato com a Terra). <b>Escuro = ruim.</b> Clique num dia para usá-lo no plano em destaque. O quadrado com borda branca é a data atual dele.</p>
+    <div class="calhead"><div class="anos row" id="anos"></div>
+      <div class="escala"><span data-i18n="esc.ruim">ruim</span> <i style="background:#3a2230"></i><i style="background:#2c4a3e"></i><i style="background:#2f7a57"></i><i style="background:#3fb37a"></i><i style="background:#7ef0b0"></i> <span data-i18n="esc.otimo">ótimo</span><span style="margin-left:10px"><i style="background:#151c2a"></i> <span data-i18n="esc.sem">sem dados</span></span></div></div>
+    <div class="cal" id="heat"></div>
+    <div class="top" id="top"></div>
+  </section>
+
+  <section class="panel only-exp">
+    <div class="sec-h"><h2 data-i18n="exp.h">Entenda: por que pousar no polo sul é tão difícil?</h2></div>
+    <div class="explica" id="explica"></div>
+  </section>
+
+  <section class="panel" id="secValid">
+    <div class="sec-h"><h2 data-i18n="val.h">Como sabemos que está certo</h2></div>
+    <p class="oque" data-i18n="val.p">Antes de confiar nos números, o pipeline confere se a física bate com casos que já conhecemos. Se algum teste falhar, há erro nos dados ou nas coordenadas.</p>
+    <div class="vt" id="valid"></div>
+    <h3 style="margin:18px 0 0;font-size:15px" data-i18n="lim.h">O que o Selene Nav não faz (limitações conhecidas)</h3>
+    <ul class="lim" data-i18n="lim.ul">
+      <li><b>Terra visível não garante contato.</b> Mostramos quando a Terra está no céu do local. Não modelamos a agenda das antenas da Deep Space Network na Terra.</li>
+      <li><b>O relevo tem incerteza.</b> Perto do polo, o nascer e o pôr do Sol podem variar algumas horas com pequenos erros no terreno. Trate os horários como estimativas.</li>
+      <li><b>As regiões Artemis são referências aproximadas.</b> A NASA divulgou os nomes das 9 regiões, mas não pontos exatos de pouso.</li>
+      <li><b>Eclipses não estão incluídos</b> (quando a Terra passa na frente do Sol), nem temperatura, poeira ou a sombra do próprio lander.</li>
+      <li><b>W/m² é a luz que chega,</b> não a energia gerada. Esta depende da orientação e da eficiência dos painéis.</li>
+    </ul>
+  </section>
+
+  <section class="panel only-plan">
+    <div class="sec-h"><h2 data-i18n="reg.h">Regras da missão</h2><span class="sub" data-i18n="reg.sub">Definem quando um cenário é viável. Ajuste conforme o lander.</span></div>
+    <div class="ctrl">
+      <label><span data-i18n="reg.dias">Quantos dias após o pouso analisar</span>
+        <select id="janela"><option value="7" data-i18n="op.7">7 dias</option><option value="14" selected data-i18n="op.14">14 dias</option><option value="29.53" data-i18n="op.lunar">1 dia lunar (29,5 dias)</option><option value="60" data-i18n="op.60">60 dias</option></select></label>
+      <label><span data-i18n="reg.minSol">Mínimo de tempo com Sol (%)</span><input type="number" id="minSol" value="50" min="0" max="100"></label>
+      <label><span data-i18n="reg.minTerra">Mínimo de tempo com a Terra (%)</span><input type="number" id="minTerra" value="50" min="0" max="100"></label>
+      <label><span data-i18n="reg.noite">Maior noite tolerada (horas)</span><input type="number" id="maxNoite" value="96" min="0"></label>
+      <label><span data-i18n="reg.regra">Terra conta como visível quando…</span>
+        <select id="regraTerra"><option value="centro" selected data-i18n="op.centro">o centro do disco está acima do relevo</option><option value="qualquer" data-i18n="op.qualquer">qualquer parte do disco aparece</option><option value="inteira" data-i18n="op.inteira">o disco inteiro aparece</option></select></label>
+      <label><span data-i18n="reg.margem">Margem extra para a antena (graus)</span><input type="number" id="margem" value="0" step="0.5" min="0"></label>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="exportar" data-i18n="exportar">Copiar comparação (CSV)</button>
+      <span class="hint" id="exportMsg"></span>
+    </div>
+    <textarea class="copyout" id="csvOut" readonly></textarea>
+  </section>
+</main>
+
+<footer>
+  <p id="rodape"></p>
+  <p data-i18n="foot">Fontes: <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener">NASA/JPL Horizons</a> (posições do Sol e da Terra) ·
+  <a href="https://quickmap.lroc.asu.edu/" target="_blank" rel="noopener">LROC Quickmap</a> e <a href="https://trek.nasa.gov/moon/" target="_blank" rel="noopener">Moon Trek</a> (relevo LOLA e locais) ·
+  <a href="https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/" target="_blank" rel="noopener">CSA Moon Exploration</a>.
+  Selene Nav, projeto para o NASA Space Apps Challenge 2026 (desafio Lunar Landing Site Navigator). Não é um produto oficial da NASA.</p>
+</footer>
+
+<div class="inicio" id="inicio" role="region" data-i18n-aria="ini.a">
+  <canvas id="globo" data-i18n-aria="globo.a"></canvas>
+  <div class="ini-marca"><div class="seg lang" aria-label="Language"><button data-l="en">EN</button><button data-l="pt">PT</button></div><span class="badge" id="iniFonte"><span class="dot"></span><span></span></span></div>
+  <div class="ini-txt">
+    <div class="marca ini-marca-txt">Selene Nav</div>
+    <h1 data-i18n="ini.h">Onde pousar na Lua?</h1>
+    <p data-i18n="ini.p">Gire a Lua e clique num local. Veja a história dele e descubra se, na data escolhida, teria <b>sol para gerar energia</b> e <b>a Terra à vista para comunicação</b>.</p>
+    <div class="row"><button class="btn primary grande" id="iniComecar" data-i18n="ini.comecar">Começar a planejar</button><button class="btn grande" id="iniPolo" data-i18n="ini.polo">Ir para o polo sul</button></div>
+    <div class="ini-leg" id="iniLeg"></div>
+  </div>
+  <div class="ini-dica" id="iniDica" data-i18n="ini.dica">Arraste para girar · role ou use dois dedos para aproximar</div>
+  <nav class="ini-nav" id="iniNav" data-i18n-aria="ini.nav"></nav>
+  <aside class="ini-painel" id="iniPainel" aria-live="polite"><button class="x" id="iniFechar" data-i18n-aria="fechar">✕</button><div id="iniConteudo" style="display:grid;gap:12px"></div></aside>
+  <div class="tip" id="tipGlobo"></div>
+</div>
+
+<div class="boas" id="boas" role="dialog" aria-modal="true" aria-labelledby="boasT">
+  <div class="box">
+    <svg viewBox="0 0 520 130" width="100%" aria-hidden="true">
+      <rect width="520" height="130" rx="10" fill="#05070c"/>
+      <circle cx="70" cy="42" r="16" fill="#f6c445"/><circle cx="70" cy="42" r="28" fill="#f6c445" opacity=".15"/>
+      <circle cx="450" cy="38" r="15" fill="#2f7fd8" stroke="#9fd0ff"/>
+      <path d="M0 100 L60 88 L110 96 L170 70 L215 92 L300 96 L360 80 L420 95 L520 90 L520 130 L0 130Z" fill="#3a3f4c"/>
+      <g transform="translate(250 68)"><rect x="-14" y="10" width="28" height="16" fill="#c9ced8"/><path d="M-14 26 L-22 36 M14 26 L22 36" stroke="#c9ced8" stroke-width="3"/><rect x="-44" y="12" width="26" height="8" fill="#4ea4ff"/><rect x="18" y="12" width="26" height="8" fill="#4ea4ff"/><line x1="0" y1="10" x2="10" y2="-6" stroke="#c9ced8" stroke-width="2"/><circle cx="11" cy="-8" r="4" fill="none" stroke="#c9ced8" stroke-width="2"/></g>
+      <path d="M86 50 Q170 50 226 76" stroke="#f6c445" stroke-dasharray="4 4" fill="none"/><path d="M262 58 Q360 30 434 38" stroke="#4ea4ff" stroke-dasharray="4 4" fill="none"/>
+    </svg>
+    <h2 id="boasT" data-i18n="ini.h">Onde pousar na Lua?</h2>
+    <p data-i18n="boas.p1">Um robô ou astronauta que pousa na Lua precisa de duas coisas:</p>
+    <div class="need">
+      <div><span class="em">☀️</span><span data-i18n="boas.n1"><b>Luz do sol</b> para gerar energia nos painéis solares.</span></div>
+      <div><span class="em">🌍</span><span data-i18n="boas.n2"><b>Ver a Terra no céu</b> para a antena mandar e receber mensagens.</span></div>
+    </div>
+    <p data-i18n="boas.p2">No polo sul da Lua o Sol passa raspando no chão e as montanhas fazem sombra. Mudar o local em poucos quilômetros, ou a data em poucos dias, pode mudar tudo. O Selene Nav mostra isso de forma rápida.</p>
+    <div class="row" style="justify-content:flex-end;gap:10px">
+      <button class="btn" id="boasPular" data-i18n="boas.pular">Explorar sozinho</button>
+      <button class="btn primary" id="boasTour" data-i18n="boas.tour">Fazer o tour (1 minuto)</button>
+    </div>
+  </div>
+</div>
+<div class="tour-back" id="tourBack"></div>
+<div class="tour-hl" id="tourHl" style="display:none"></div>
+<div class="tour-box" id="tourBox" style="display:none" role="dialog" aria-live="polite">
+  <h4 id="tourT"></h4><p id="tourP"></p>
+  <div class="pe"><span class="pg" id="tourPg"></span>
+    <div class="row"><button class="btn small" id="tourSair" data-i18n="tour.sair">Sair</button><button class="btn small" id="tourAnt" data-i18n="tour.ant">Voltar</button><button class="btn small primary" id="tourProx">Próximo</button></div></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="box">
+    <h3 style="margin:0" data-i18n="cus.h">Coordenada personalizada</h3>
+    <p class="hint" style="margin:0" id="customMsg">Usa um modelo simplificado de Sol e Terra, sem relevo. Serve para explorar, não para planejar.</p>
+    <div id="customCampos" style="display:grid;gap:10px"><label class="hint"><span data-i18n="cus.nome">Nome</span><input id="cNome" value=""></label>
+    <label class="hint"><span data-i18n="cus.lat">Latitude (graus, sul negativo)</span><input id="cLat" type="number" step="0.01" value="-85"></label>
+    <label class="hint"><span data-i18n="cus.lon">Longitude (graus leste, 0 a 360)</span><input id="cLon" type="number" step="0.01" value="30"></label></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" id="cCancel">Cancelar</button><button class="btn primary" id="cOk" data-i18n="cus.ok">Adicionar</button></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   Constantes e utilidades
+   ========================================================================= */
+const RAD = Math.PI / 180, DEG = 180 / Math.PI;
+const SOL_R = 0.2666, TERRA_R = 0.95;          // raios angulares aproximados vistos da Lua (graus)
+const DIA_MS = 86400e3, HORA_MS = 3600e3;
+const $ = id => document.getElementById(id);
+/* ---------- Idioma (inglês é o padrão) ---------- */
+let LANG = "en";
+try { const g = localStorage.getItem("llsn_lang"); if (g === "pt" || g === "en") LANG = g; } catch {}
+const T = (pt, en) => LANG === "en" ? en : pt;
+const LOC = () => LANG === "en" ? "en-US" : "pt-BR";
+const fmt = (x, d = 0) => Number(x).toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d });
+const NOMES_EN = {
+  polo_sul: "Geographic South Pole", shackleton: "Shackleton crater (floor)",
+  art_cabeus_b: "Artemis: Peak near Cabeus B", art_haworth: "Artemis: Haworth", art_malapert: "Artemis: Malapert Massif",
+  art_mouton_plat: "Artemis: Mons Mouton Plateau", art_mouton: "Artemis: Mons Mouton", art_nobile1: "Artemis: Nobile Rim 1",
+  art_nobile2: "Artemis: Nobile Rim 2", art_gerlache2: "Artemis: de Gerlache Rim 2", art_slater: "Artemis: Slater Plain",
+  chandrayaan3: "Chandrayaan-3 Vikram (India)", change4: "Chang'e 4 (China, far side)",
+};
+const CAT_PT = { "comercial/CLPS": "Comercial / CLPS", "outros países": "Outros países", "polo sul": "Referência", "Polo sul": "Referência", "referencia": "Referência" };
+const CAT_EN = { "Comercial / CLPS": "Commercial / CLPS", "Outros países": "Other countries", "Artemis (regiões candidatas)": "Artemis (candidate regions)", "Referência": "Reference", "Personalizados": "Custom", "Apollo": "Apollo" };
+const nomeLocal = l => LANG === "en" ? (NOMES_EN[l.id] || l.nome) : l.nome;
+const nomeCurto = l => nomeLocal(l).replace("Artemis: ", "");
+const catLocal = l => { const c = CAT_PT[l.categoria] || l.categoria || ""; return LANG === "en" ? (CAT_EN[c] || c) : c; };
+const I18N = {
+  "hdr.sub": "Lunar landing site navigator · Sun for power, Earth for communication.",
+  "mExp": "Explore", "mPlan": "Plan", "verLua": "3D Moon", "ajuda": "How to use", "carregar": "Load real data",
+  "c1": "<b>Sun = power</b><span>The lander runs on solar panels. Without sunlight, the battery dies and everything freezes.</span>",
+  "c2": "<b>Earth in the sky = communication</b><span>The antenna has to \"see\" Earth to send and receive messages.</span>",
+  "c3": "<b>Mountains = shadow</b><span>At the south pole the Sun skims the ground. A single mountain can hide both the Sun and Earth.</span>",
+  "s1.h": "Choose where and when to land",
+  "s1.p": "Each card is a <b>landing plan</b>: a place on the Moon and a date. Compare up to 4 plans. The card with the light border is the one shown in parts 2 and 4.",
+  "map.p": "Seen from above, with the south pole in the center. Each dot is a landing site, colored by its verdict on the date of the highlighted plan: <b style=\"color:var(--ok)\">green = good</b>, <b style=\"color:var(--warn)\">yellow = caution</b>, <b style=\"color:var(--bad)\">red = not recommended</b>. Click a dot or the list to switch the plan's site. It is the fastest way to find an alternative in the same region.",
+  "relevo": "Include the mountains (real terrain)",
+  "s2.p": "Imagine standing at the landing site and turning a full 360°. This strip shows everything you would see: <b>the ground and mountains in gray</b>, the sky in black, the <b>Sun</b> (yellow ball) and <b>Earth</b> (blue ball). When a ball is behind the gray, it is hidden. The dotted lines show the path each one takes over the next days.",
+  "s2.hint": "Drag the bar (or press Animate) to watch the days go by after landing. N, E, S and W are north, east, south and west.",
+  "lg.sol": "The Sun and its path", "lg.terra": "Earth and its path", "lg.relevo": "Terrain around the site",
+  "s3.h": "The days after landing",
+  "s3.p": "Each plan has two strips. <b>Yellow</b> = sunlight (power). <b>Blue</b> = Earth in view (communication). Dark = none. The white line marks the moment shown in part 2. Click anywhere to jump to it.",
+  "lg.temsol": "Sunlight", "lg.meio": "Sun partly hidden by a mountain", "lg.sem": "No sun / no contact", "lg.fala": "Earth in view",
+  "sol.p": "The yellow line is the height of the Sun. The gray area is the height of the mountains in the Sun's direction. When the line is above the gray, the panels get sunlight. The higher the Sun, the stronger the light.",
+  "s4.p": "Each square is a day you could land. <b>Light green = great</b> (lots of sunlight and contact with Earth). <b>Dark = poor.</b> Click a day to use it in the highlighted plan. The square with a white border is its current date.",
+  "esc.ruim": "poor", "esc.otimo": "great", "esc.sem": "no data",
+  "exp.h": "Understand: why is landing at the south pole so hard?",
+  "val.h": "How we know it is right",
+  "val.p": "Before trusting the numbers, the pipeline checks that the physics matches cases we already know. If a test fails, there is an error in the data or the coordinates.",
+  "lim.h": "What Selene Nav does not do (known limitations)",
+  "lim.ul": "<li><b>Earth in view does not guarantee contact.</b> We show when Earth is in the site's sky. We do not model the schedule of NASA's Deep Space Network antennas on Earth.</li><li><b>Terrain has uncertainty.</b> Near the pole, sunrise and sunset can shift by a few hours with small terrain errors. Treat times as estimates.</li><li><b>The Artemis regions are approximate references.</b> NASA released the names of the 9 regions, but not exact landing points.</li><li><b>Eclipses are not included</b> (when Earth passes in front of the Sun), nor temperature, dust or the lander's own shadow.</li><li><b>W/m² is the light that arrives,</b> not the power generated. That depends on the panels' orientation and efficiency.</li>",
+  "reg.h": "Mission rules", "reg.sub": "They define when a scenario is viable. Adjust them to the lander.",
+  "reg.dias": "Days after landing to analyze", "op.7": "7 days", "op.14": "14 days", "op.lunar": "1 lunar day (29.5 days)", "op.60": "60 days",
+  "reg.minSol": "Minimum time with sunlight (%)", "reg.minTerra": "Minimum time with Earth in view (%)", "reg.noite": "Longest tolerable night (hours)",
+  "reg.regra": "Earth counts as visible when…", "op.centro": "the center of its disk is above the terrain", "op.qualquer": "any part of the disk shows", "op.inteira": "the whole disk shows",
+  "reg.margem": "Extra margin for the antenna (degrees)", "exportar": "Copy comparison (CSV)",
+  "foot": "Sources: <a href=\"https://ssd.jpl.nasa.gov/horizons/\" target=\"_blank\" rel=\"noopener\">NASA/JPL Horizons</a> (Sun and Earth positions) · <a href=\"https://quickmap.lroc.asu.edu/\" target=\"_blank\" rel=\"noopener\">LROC Quickmap</a> and <a href=\"https://trek.nasa.gov/moon/\" target=\"_blank\" rel=\"noopener\">Moon Trek</a> (LOLA terrain and sites) · <a href=\"https://www.asc-csa.gc.ca/eng/astronomy/moon-exploration/\" target=\"_blank\" rel=\"noopener\">CSA Moon Exploration</a>. Selene Nav, a project for the NASA Space Apps Challenge 2026 (Lunar Landing Site Navigator challenge). Not an official NASA product.",
+  "ini.h": "Where should we land on the Moon?",
+  "ini.p": "Spin the Moon and click a site. Read its story and find out whether, on the chosen date, it would have <b>sunlight for power</b> and <b>Earth in view for communication</b>.",
+  "ini.comecar": "Start planning", "ini.polo": "Go to the south pole", "ini.dica": "Drag to rotate · scroll or pinch to zoom",
+  "boas.p1": "A robot or astronaut landing on the Moon needs two things:",
+  "boas.n1": "<b>Sunlight</b> to generate power with solar panels.",
+  "boas.n2": "<b>Earth in the sky</b> so the antenna can send and receive messages.",
+  "boas.p2": "At the Moon's south pole the Sun skims the ground and mountains cast long shadows. Moving the site a few kilometers, or the date a few days, can change everything. Selene Nav shows that quickly.",
+  "boas.pular": "Explore on my own", "boas.tour": "Take the tour (1 minute)", "tour.sair": "Exit", "tour.ant": "Back",
+  "cus.h": "Custom coordinate", "cus.nome": "Name", "cus.lat": "Latitude (degrees, south negative)", "cus.lon": "Longitude (degrees east, 0 to 360)", "cus.ok": "Add",
+};
+const I18N_ATTR = {
+  "mExp.t": ["Explicações em linguagem simples", "Plain-language explanations"],
+  "mPlan.t": ["Números, regras de missão e exportação", "Numbers, mission rules and export"],
+  "verLua.t": ["Voltar à Lua em 3D", "Back to the 3D Moon"],
+  "carregar.t": ["Carregar dados/app_dados.json gerado pelos scripts", "Load dados/app_dados.json produced by the scripts"],
+  "relevo.t": ["Relevo medido pela sonda LRO da NASA (instrumento LOLA)", "Terrain measured by NASA's LRO probe (LOLA instrument)"],
+  "cursor.a": ["Tempo após o pouso", "Time after landing"],
+  "ini.a": ["Tela de entrada: Lua em 3D", "Start screen: 3D Moon"],
+  "globo.a": ["Lua em 3D. Arraste para girar, role para aproximar, clique num ponto para ver o local.", "3D Moon. Drag to rotate, scroll to zoom, click a dot to see the site."],
+  "ini.nav": ["Locais de pouso", "Landing sites"], "fechar": ["Fechar", "Close"],
+};
+function aplicarIdioma() {
+  document.documentElement.lang = LANG === "en" ? "en" : "pt-BR";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    if (el.dataset.pt === undefined) el.dataset.pt = el.innerHTML;
+    const en = I18N[el.dataset.i18n];
+    el.innerHTML = LANG === "en" && en !== undefined ? en : el.dataset.pt;
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { const v = I18N_ATTR[el.dataset.i18nTitle]; if (v) el.title = T(v[0], v[1]); });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => { const v = I18N_ATTR[el.dataset.i18nAria]; if (v) el.setAttribute("aria-label", T(v[0], v[1])); });
+  document.querySelectorAll(".seg.lang button").forEach(b => { b.classList.toggle("on", b.dataset.l === LANG); b.setAttribute("aria-pressed", b.dataset.l === LANG); });
+  const nm = document.getElementById("cNome"); if (nm && (!nm.value || nm.value === "Meu local" || nm.value === "My site")) nm.value = T("Meu local", "My site");
+}
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function dur(h) {
+  if (h == null) return "—";
+  if (h < 1) return T("menos de 1 h", "under 1 h");
+  const d = Math.floor(h / 24), r = Math.round(h % 24);
+  return d ? `${d} d ${r} h` : `${r} h`;
+}
+function dataUTC(ms, hora = true) {
+  const d = new Date(ms);
+  const s = d.toLocaleDateString(LOC(), { timeZone: "UTC", day: "2-digit", month: "short", year: "numeric" });
+  return hora ? `${s} ${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")} UTC` : s;
+}
+function isoDia(ms) { return new Date(ms).toISOString().slice(0, 10); }
+
+/* Fração da área do disco acima de uma linha reta (mesma fórmula do Python). */
+function fracDisco(el, r) {
+  if (el >= r) return 1; if (el <= -r) return 0;
+  const d = -el;
+  const esc = r * r * Math.acos(clamp(-d / r, -1, 1)) + d * Math.sqrt(Math.max(0, r * r - d * d));
+  return clamp(1 - esc / (Math.PI * r * r), 0, 1);
+}
+
+/* =========================================================================
+   Dados de DEMONSTRAÇÃO (modelo aproximado + relevo sintético)
+   Usados só até a equipe carregar dados/app_dados.json gerado pelos scripts.
+   ========================================================================= */
+const LOCAIS_DEMO = [
+  ["polo_sul", "Polo Sul geográfico", -89.999, 0, "Referência"],
+  ["shackleton", "Cratera Shackleton (fundo)", -89.67, 129.78, "Polo sul"],
+  ["art_cabeus_b", "Artemis: Pico perto de Cabeus B", -82.3, 306.0, "Artemis (regiões candidatas)"],
+  ["art_haworth", "Artemis: Haworth", -87.45, 355.0, "Artemis (regiões candidatas)"],
+  ["art_malapert", "Artemis: Maciço Malapert", -86.0, 2.9, "Artemis (regiões candidatas)"],
+  ["art_mouton_plat", "Artemis: Planalto Mons Mouton", -85.4, 35.0, "Artemis (regiões candidatas)"],
+  ["art_mouton", "Artemis: Mons Mouton", -84.6, 31.3, "Artemis (regiões candidatas)"],
+  ["art_nobile1", "Artemis: Borda de Nobile 1", -84.8, 48.0, "Artemis (regiões candidatas)"],
+  ["art_nobile2", "Artemis: Borda de Nobile 2", -85.6, 60.0, "Artemis (regiões candidatas)"],
+  ["art_gerlache2", "Artemis: Borda de de Gerlache 2", -88.3, 290.0, "Artemis (regiões candidatas)"],
+  ["art_slater", "Artemis: Planície Slater", -88.0, 250.0, "Artemis (regiões candidatas)"],
+  ["im2_athena", "IM-2 Athena (Mons Mouton)", -84.79, 29.19, "Comercial / CLPS"],
+  ["im1_odysseus", "IM-1 Odysseus (Malapert A)", -80.13, 1.44, "Comercial / CLPS"],
+  ["chandrayaan3", "Chandrayaan-3 Vikram (Índia)", -69.373, 32.319, "Outros países"],
+  ["change4", "Chang'e 4 (China, lado oculto)", -45.4446, 177.5991, "Outros países"],
+  ["blue_ghost1", "Blue Ghost M1 (Mare Crisium)", 18.56, 61.81, "Comercial / CLPS"],
+  ["apollo11", "Apollo 11", 0.6741, 23.473, "Apollo"],
+  ["apollo15", "Apollo 15", 26.1322, 3.6339, "Apollo"],
+  ["apollo17", "Apollo 17", 20.1908, 30.7717, "Apollo"],
+];
+const PERFIS = {
+  polo_sul: { base: 0.35, picos: 5, amp: 2.2 }, shackleton: { base: 18.5, picos: 3, amp: 1.5 },
+  im2_athena: { base: 0.25, picos: 4, amp: 1.5 }, im1_odysseus: { base: 0.45, picos: 5, amp: 2.4 },
+  chandrayaan3: { base: 0.4, picos: 4, amp: 2.0 }, change4: { base: 0.6, picos: 5, amp: 3.0 },
+  blue_ghost1: { base: 0.3, picos: 4, amp: 2.5 }, apollo11: { base: 0.2, picos: 3, amp: 1.2 },
+  apollo15: { base: 0.8, picos: 6, amp: 4.5 }, apollo17: { base: 1.0, picos: 6, amp: 5.0 },
+};
+function hash(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed) { return () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function horizonteDemo(id) {
+  const p = PERFIS[id] || { base: 0.5, picos: 4, amp: 2 }, r = rng(hash(id));
+  const picos = Array.from({ length: p.picos }, () => ({ c: r() * 360, a: p.amp * (0.35 + 0.65 * r()), w: 6 + r() * 26, d: 3 + r() * 40 }));
+  const fases = Array.from({ length: 6 }, () => r() * 6.283);
+  const el = [], dist = [];
+  for (let i = 0; i < 720; i++) {
+    const az = i * 0.5;
+    let h = p.base, melhor = 0, dmelhor = null;
+    for (let k = 1; k <= 6; k++) h += (0.14 / k) * Math.sin(k * az * RAD + fases[k - 1]);
+    for (const q of picos) {
+      const dz = ((az - q.c + 540) % 360) - 180, v = q.a * Math.exp(-dz * dz / (2 * q.w * q.w));
+      h += v; if (v > melhor) { melhor = v; dmelhor = q.d; }
+    }
+    el.push(+h.toFixed(3)); dist.push(melhor > 0.15 ? +dmelhor.toFixed(1) : null);
+  }
+  return { el, dist_km: el.map((_, i) => dist[i]), fontes: ["relevo sintético (demonstração)"] };
+}
+/* Direção (az, el) de um corpo cujo ponto sub-corpo é (bLat, bLon), a distR raios lunares. */
+function azel(lat, lon, bLat, bLon, distR) {
+  const f = lat * RAD, l = lon * RAD, bf = bLat * RAD, bl = bLon * RAD;
+  const up = [Math.cos(f) * Math.cos(l), Math.cos(f) * Math.sin(l), Math.sin(f)];
+  const E = [-Math.sin(l), Math.cos(l), 0], N = [-Math.sin(f) * Math.cos(l), -Math.sin(f) * Math.sin(l), Math.cos(f)];
+  let v = [Math.cos(bf) * Math.cos(bl) * distR - up[0], Math.cos(bf) * Math.sin(bl) * distR - up[1], Math.sin(bf) * distR - up[2]];
+  const n = Math.hypot(...v); v = v.map(x => x / n);
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  return [((Math.atan2(dot(v, E), dot(v, N)) * DEG) + 360) % 360, Math.asin(clamp(dot(v, up), -1, 1)) * DEG];
+}
+/* Modelo simplificado: ciclo sinódico, libração e inclinação do eixo lunar. */
+function serieModelo(lat, lon, t0, passoH, n) {
+  const s = { sol_az: new Float32Array(n), sol_el: new Float32Array(n), terra_az: new Float32Array(n), terra_el: new Float32Array(n), irr0: new Float32Array(n) };
+  for (let i = 0; i < n; i++) {
+    const t = i * passoH / 24;
+    const sLat = 1.543 * Math.sin(2 * Math.PI * t / 346.62 + 0.7), sLon = 180 - 360 * t / 29.530589;
+    const eLat = 6.68 * Math.sin(2 * Math.PI * t / 27.2122), eLon = 7.9 * Math.sin(2 * Math.PI * t / 27.5545);
+    const a = azel(lat, lon, sLat, sLon, 86100), b = azel(lat, lon, eLat, eLon, 221.3);
+    s.sol_az[i] = a[0]; s.sol_el[i] = a[1]; s.terra_az[i] = b[0]; s.terra_el[i] = b[1];
+    s.irr0[i] = 1361 * (1 + 0.0334 * Math.cos(2 * Math.PI * (t - 3) / 365.25));
+  }
+  return s;
+}
+function dadosDemo() {
+  const t0 = Date.UTC(2027, 0, 1), passo = 1, n = 731 * 24;
+  return {
+    meta: { demo: true, fonte: "Modelo aproximado + relevo sintético", inicio_utc: "2027-01-01T00:00Z", passo_horas: passo, amostras: n },
+    locais: LOCAIS_DEMO.map(([id, nome, lat, lon, cat]) => ({ id, nome, lat, lon_leste: lon, categoria: cat, observacao: "", horizonte: horizonteDemo(id), lazy: true })),
+    series: {}, _t0: t0,
+  };
+}
+
+/* =========================================================================
+   Estado
+   ========================================================================= */
+const S = {
+  D: null, t0: 0, passoH: 1, n: 0,
+  relevo: true, regraTerra: "centro", margem: 0,
+  janelaDias: 14, minSol: 50, minTerra: 50, maxNoite: 96,
+  cenarios: [], ativo: 0, offsetH: 0, tocando: false,
+  cacheVis: new Map(),
+};
+let uid = 1;
+
+function carregarDados(D) {
+  S.D = D;
+  S.t0 = Date.parse(D.meta.inicio_utc);
+  S.passoH = D.meta.passo_horas; S.n = D.meta.amostras;
+  S.cacheVis.clear();
+  for (const l of D.locais) {
+    if (l.horizonte && l.horizonte.el) l.horizonte.el = Float32Array.from(l.horizonte.el);
+    const s = D.series[l.id];
+    if (s) for (const k of Object.keys(s)) s[k] = Float32Array.from(s[k]);
+  }
+  const ids = D.locais.map(l => l.id);
+  const pref = ["im2_athena", "polo_sul", "im1_odysseus"].filter(x => ids.includes(x));
+  const escolha = (pref.length >= 2 ? pref.slice(0, 2) : ids.slice(0, 2));
+  const base = clamp(S.t0 + 68 * DIA_MS, S.t0, S.t0 + (S.n * S.passoH * HORA_MS) - 30 * DIA_MS);
+  const baseDia = Date.UTC(new Date(base).getUTCFullYear(), new Date(base).getUTCMonth(), new Date(base).getUTCDate());
+  S.cenarios = escolha.map(id => ({ uid: uid++, local: id, base: baseDia, slip: 0 }));
+  S.ativo = 0; S.offsetH = 0;
+  atualizarFonte();
+  if (document.body.classList.contains("intro")) montarInicio();
+  renderTudo();
+}
+
+function local(id) { return S.D.locais.find(l => l.id === id); }
+function serie(l) {
+  let s = S.D.series[l.id];
+  if (!s) { s = serieModelo(l.lat, l.lon_leste, S.t0, S.passoH, S.n); S.D.series[l.id] = s; }
+  return s;
+}
+/* Horizonte (graus) num azimute, com interpolação e volta em 360°. */
+function H(l, az) {
+  if (!S.relevo || !l.horizonte || !l.horizonte.el) return 0;
+  const el = l.horizonte.el, n = el.length, passo = 360 / n;
+  const x = (((az % 360) + 360) % 360) / passo, i = Math.floor(x) % n, f = x - Math.floor(x);
+  return el[i] * (1 - f) + el[(i + 1) % n] * f;
+}
+function terraVisivel(el, h) {
+  const m = S.margem;
+  if (S.regraTerra === "qualquer") return el + TERRA_R - m > h;
+  if (S.regraTerra === "inteira") return el - TERRA_R - m > h;
+  return el - m > h;
+}
+/* Visibilidade de toda a série de um local (em cache por configuração). */
+function vis(l) {
+  const chave = `${l.id}|${S.relevo}|${S.regraTerra}|${S.margem}`;
+  if (S.cacheVis.has(chave)) return S.cacheVis.get(chave);
+  const s = serie(l), n = S.n;
+  const sol = new Float32Array(n), ter = new Uint8Array(n), hs = new Float32Array(n), ht = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    hs[i] = H(l, s.sol_az[i]); ht[i] = H(l, s.terra_az[i]);
+    sol[i] = fracDisco(s.sol_el[i] - hs[i], SOL_R);
+    ter[i] = terraVisivel(s.terra_el[i], ht[i]) ? 1 : 0;
+  }
+  const v = { sol, ter, hs, ht };
+  S.cacheVis.set(chave, v);
+  return v;
+}
+function idxDe(ms) { return clamp(Math.round((ms - S.t0) / (S.passoH * HORA_MS)), 0, S.n - 1); }
+function msDe(i) { return S.t0 + i * S.passoH * HORA_MS; }
+function dataCenario(c) { return c.base + c.slip * DIA_MS; }
+
+/* Métricas de uma janela [i0, i1). */
+function metricas(l, i0, i1) {
+  const v = vis(l), s = serie(l);
+  let nSol = 0, nTer = 0, nAmb = 0, irr = 0, elMax = -90, noite = 0, noiteMax = 0, semT = 0, semTMax = 0, tMin = 90, tMax = -90;
+  for (let i = i0; i < i1; i++) {
+    const sl = v.sol[i] > 0, te = v.ter[i] === 1;
+    if (sl) nSol++; if (te) nTer++; if (sl && te) nAmb++;
+    irr += s.irr0[i] * v.sol[i];
+    if (s.sol_el[i] > elMax) elMax = s.sol_el[i];
+    if (s.terra_el[i] < tMin) tMin = s.terra_el[i]; if (s.terra_el[i] > tMax) tMax = s.terra_el[i];
+    noite = sl ? 0 : noite + 1; if (noite > noiteMax) noiteMax = noite;
+    semT = te ? 0 : semT + 1; if (semT > semTMax) semTMax = semT;
+  }
+  const n = Math.max(1, i1 - i0);
+  return {
+    pctSol: 100 * nSol / n, pctTer: 100 * nTer / n, pctAmb: 100 * nAmb / n, irr: irr / n, solElMax: elMax,
+    noiteMaxH: noiteMax * S.passoH, semTerraMaxH: semTMax * S.passoH, terraMin: tMin, terraMax: tMax, n,
+  };
+}
+function avaliar(m) {
+  const falhas = [];
+  if (m.pctSol < S.minSol) falhas.push(T(`Pouco sol: ${fmt(m.pctSol)}% do tempo (precisa de ${S.minSol}%)`, `Too little sunlight: ${fmt(m.pctSol)}% of the time (needs ${S.minSol}%)`));
+  if (m.pctTer < S.minTerra) falhas.push(T(`Pouco contato com a Terra: ${fmt(m.pctTer)}% do tempo (precisa de ${S.minTerra}%)`, `Too little contact with Earth: ${fmt(m.pctTer)}% of the time (needs ${S.minTerra}%)`));
+  if (m.noiteMaxH > S.maxNoite) falhas.push(T(`Escuridão longa demais: ${dur(m.noiteMaxH)} seguidas (aguenta ${S.maxNoite} h)`, `Darkness too long: ${dur(m.noiteMaxH)} in a row (can survive ${S.maxNoite} h)`));
+  const nivel = falhas.length === 0 ? "ok" : falhas.length === 1 ? "warn" : "bad";
+  return { nivel, falhas, rotulo: { ok: T("✓ Bom local", "✓ Good site"), warn: T("! Atenção", "! Caution"), bad: T("✕ Não recomendado", "✕ Not recommended") }[nivel] };
+}
+/* Próxima mudança de estado a partir de i (procura até o fim da série). */
+function proxima(arr, i, cond) {
+  const atual = cond(arr[i]);
+  for (let j = i + 1; j < S.n; j++) if (cond(arr[j]) !== atual) return (j - i) * S.passoH;
+  return null;
+}
+function janelaN() { return Math.round(S.janelaDias * 24 / S.passoH); }
+function janelaCenario(c) {
+  const i0 = idxDe(dataCenario(c)), i1 = Math.min(S.n, i0 + janelaN());
+  return { i0, i1, cortada: i1 - i0 < janelaN() };
+}
+
+/* =========================================================================
+   Cartões de cenário
+   ========================================================================= */
+function opcoesLocais(sel) {
+  const grupos = {};
+  for (const l of S.D.locais) (grupos[catLocal(l) || T("Outros", "Other")] ||= []).push(l);
+  let h = "";
+  for (const [g, ls] of Object.entries(grupos)) {
+    h += `<optgroup label="${esc(g)}">` + ls.map(l => `<option value="${esc(l.id)}"${l.id === sel ? " selected" : ""}>${esc(nomeLocal(l))}</option>`).join("") + "</optgroup>";
+  }
+  return h + `<option value="__custom">${T("+ Coordenada personalizada…", "+ Custom coordinate…")}</option>`;
+}
+function textoAgora(l, i) {
+  const s = serie(l), v = vis(l);
+  const f = v.sol[i], el = s.sol_el[i], hs = v.hs[i];
+  let solT, solD;
+  if (f >= 0.999) { solT = T("Tem sol: painéis gerando energia", "Sunlight: panels generating power"); solD = T(`Sol ${fmt(el, 1)}° acima do horizonte`, `Sun ${fmt(el, 1)}° above the horizon`); }
+  else if (f > 0) { solT = T("Sol meio escondido atrás de uma montanha", "Sun partly hidden behind a mountain"); solD = T(`${fmt(100 * f)}% do Sol aparece`, `${fmt(100 * f)}% of the Sun is visible`); }
+  else if (el > -SOL_R && S.relevo) { solT = T("Sem sol: uma montanha está bloqueando", "No sun: a mountain is blocking it"); solD = T(`O Sol está a ${fmt(el, 1)}°, mas o terreno nessa direção sobe até ${fmt(hs, 1)}°`, `The Sun is at ${fmt(el, 1)}°, but the terrain in that direction rises to ${fmt(hs, 1)}°`); }
+  else { solT = T("Sem sol: é noite neste local", "No sun: it is night here"); solD = T(`Sol ${fmt(Math.abs(el), 1)}° abaixo do horizonte`, `Sun ${fmt(Math.abs(el), 1)}° below the horizon`); }
+  const dS = proxima(v.sol, i, x => x > 0);
+  const solCd = f > 0 ? (dS == null ? T("A luz continua até o fim dos dados", "Light lasts until the end of the data") : T(`A luz acaba em <b>${dur(dS)}</b>`, `Light ends in <b>${dur(dS)}</b>`))
+                      : (dS == null ? T("O sol não volta até o fim dos dados", "The Sun does not return before the end of the data") : T(`O sol volta em <b>${dur(dS)}</b>`, `The Sun returns in <b>${dur(dS)}</b>`));
+  const te = v.ter[i] === 1, tel = s.terra_el[i];
+  let terT, terD;
+  if (te) { terT = T("Dá para falar com a Terra", "Earth is in view"); terD = T(`Terra ${fmt(tel, 1)}° acima do horizonte`, `Earth ${fmt(tel, 1)}° above the horizon`); }
+  else if (terraVisivel(tel, 0)) { terT = T("Sem contato: uma montanha esconde a Terra", "No contact: a mountain hides Earth"); terD = T(`A Terra está a ${fmt(tel, 1)}°, mas o terreno sobe até ${fmt(v.ht[i], 1)}°`, `Earth is at ${fmt(tel, 1)}°, but the terrain rises to ${fmt(v.ht[i], 1)}°`); }
+  else if (tel < -12) { terT = T("Sem contato: a Terra nunca aparece aqui", "No contact: Earth never appears here"); terD = T("Este local fica no lado da Lua virado para longe da Terra", "This site is on the side of the Moon that faces away from Earth"); }
+  else { terT = T("Sem contato: a Terra está abaixo do horizonte", "No contact: Earth is below the horizon"); terD = T(`Terra ${fmt(Math.abs(tel), 1)}° abaixo do horizonte`, `Earth ${fmt(Math.abs(tel), 1)}° below the horizon`); }
+  const dT = proxima(v.ter, i, x => x === 1);
+  const terCd = te ? (dT == null ? T("O contato continua até o fim dos dados", "Contact lasts until the end of the data") : T(`O contato acaba em <b>${dur(dT)}</b>`, `Contact ends in <b>${dur(dT)}</b>`))
+                   : (dT == null ? T("A Terra não aparece até o fim dos dados", "Earth does not appear before the end of the data") : T(`A Terra volta a aparecer em <b>${dur(dT)}</b>`, `Earth reappears in <b>${dur(dT)}</b>`));
+  const curto = h => h == null ? T("até o fim dos dados", "beyond the data") : dur(h);
+  const solC = f >= 0.999 ? T("Tem sol", "Sunlight") : f > 0 ? T("Sol meio escondido", "Sun partly hidden") : (el > -SOL_R && S.relevo) ? T("Montanha tampa o Sol", "Mountain blocks the Sun") : T("Noite", "Night");
+  const solS = f > 0 ? T(`acaba em ${curto(dS)}`, `ends in ${curto(dS)}`) : T(`volta em ${curto(dS)}`, `returns in ${curto(dS)}`);
+  const terC = te ? T("Falando com a Terra", "Talking to Earth") : terraVisivel(tel, 0) ? T("Montanha esconde a Terra", "Mountain hides Earth") : (tel < -12 ? T("Terra nunca aparece", "Earth never appears") : T("Terra fora de vista", "Earth out of view"));
+  const terS = te ? T(`acaba em ${curto(dT)}`, `ends in ${curto(dT)}`) : (tel < -12 ? T("lado oculto da Lua", "far side of the Moon") : T(`volta em ${curto(dT)}`, `returns in ${curto(dT)}`));
+  return { solT, solD, solCd, terT, terD, terCd, f, te, solC, solS, terC, terS };
+}
+function frase(l, m) {
+  const p = x => `${fmt(x)}%`;
+  let t = T(`Em resumo: os painéis teriam luz em ${p(m.pctSol)} do tempo e a equipe conseguiria falar com a Terra em ${p(m.pctTer)} do tempo.`, `In short: the panels would have light ${p(m.pctSol)} of the time and the team could talk to Earth ${p(m.pctTer)} of the time.`);
+  if (m.pctTer < 1) t += T(" Sem contato direto: seria preciso um satélite no meio do caminho para repassar as mensagens.", " No direct contact: a relay satellite would be needed to pass messages along.");
+  if (m.noiteMaxH > 100) t += T(` Há ${dur(m.noiteMaxH)} seguidas no escuro: o lander precisaria de muita bateria e aquecimento para aguentar o frio.`, ` There are ${dur(m.noiteMaxH)} of darkness in a row: the lander would need a lot of battery and heating to survive the cold.`);
+  return t;
+}
+function anel(pct, cor, rotulo) {
+  const r = 25, c = 2 * Math.PI * r, v = clamp(pct, 0, 100);
+  return `<div class="anel"><svg viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="${esc(rotulo)}: ${fmt(v)}%">
+    <circle cx="32" cy="32" r="${r}" fill="none" stroke="#ffffff14" stroke-width="5"/>
+    <circle cx="32" cy="32" r="${r}" fill="none" stroke="${cor}" stroke-opacity="${v < 0.5 ? 0 : 1}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(c * v / 100).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 32 32)"/>
+    <text x="32" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="#edf1f7" font-family="Bricolage Grotesque, sans-serif">${fmt(v)}%</text></svg>
+    <div class="al">${rotulo}</div></div>`;
+}
+function melhorPlano() {
+  if (S.cenarios.length < 2) return null;
+  const peso = { ok: 2, warn: 1, bad: 0 };
+  const lista = S.cenarios.map((c, k) => { const l = local(c.local), { i0, i1 } = janelaCenario(c), m = metricas(l, i0, i1); return { k, c, l, m, a: avaliar(m) }; });
+  lista.sort((x, y) => peso[y.a.nivel] - peso[x.a.nivel] || y.m.pctAmb - x.m.pctAmb);
+  return lista[0];
+}
+function renderResultado() {
+  const b = melhorPlano(), el = $("resultado");
+  if (!b) { el.innerHTML = ""; return; }
+  if (b.a.nivel === "bad") {
+    el.innerHTML = `<div class="resultado neutro"><div><b>${T("Nenhum plano é recomendado", "No plan is recommended")}</b><br><span>${T("Tente outra data na parte 4 ou outro local.", "Try another date in part 4 or another site.")}</span></div></div>`;
+    return;
+  }
+  const ressalva = b.a.nivel === "warn" ? ` ${T("Atenção", "Caution")}: ${b.a.falhas[0].charAt(0).toLowerCase() + b.a.falhas[0].slice(1)}.` : "";
+  el.innerHTML = `<div class="resultado"><div><b>${T("Melhor plano", "Best plan")}: ${esc(nomeLocal(b.l))}, ${dataUTC(dataCenario(b.c), false)}</b><br>
+    <span>${ressalva ? T("Melhor opção entre os planos, mas não perfeita. ", "Best option among the plans, but not perfect. ") : ""}${T(`Sol em ${fmt(b.m.pctSol)}% do tempo e contato com a Terra em ${fmt(b.m.pctTer)}% nos ${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} dias após o pouso.`, `Sunlight ${fmt(b.m.pctSol)}% of the time and contact with Earth ${fmt(b.m.pctTer)}% of the time in the ${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} days after landing.`)}${esc(ressalva)}</span></div></div>`;
+}
+function blocoAtraso(c, l, m, a) {
+  const opcoes = [[-7, T("1 semana antes", "1 week early")], [0, T("Data planejada", "Planned date")], [7, T("+1 semana", "+1 week")], [14, T("+2 semanas", "+2 weeks")], [30, T("+1 mês", "+1 month")]];
+  const bts = opcoes.map(([d, t]) => `<button data-f="atr" data-d="${d}" class="${c.slip === d ? "on" : ""}">${t}</button>`).join("");
+  let corpo;
+  if (c.slip === 0) {
+    corpo = `<div class="hint">${T("Foguetes quase nunca saem no dia planejado. Escolha um atraso para ver se este local continua bom.", "Rockets almost never launch on the planned day. Pick a delay to see whether this site is still good.")}</div>`;
+  } else {
+    const i0 = idxDe(c.base), mb = metricas(l, i0, Math.min(S.n, i0 + janelaN())), ab = avaliar(mb);
+    const linha = (rot, x, y) => {
+      const d = Math.round(y - x), cls = d > 0 ? "up" : d < 0 ? "dn" : "eq", sinal = d > 0 ? `▲ ${d}` : d < 0 ? `▼ ${-d}` : T("igual", "same");
+      return `<div class="ln"><span>${rot}</span><span>${fmt(x)}% → ${fmt(y)}% <span class="dl ${cls}">${sinal}</span></span></div>`;
+    };
+    const nomes = { ok: T("Bom local", "Good site"), warn: T("Atenção", "Caution"), bad: T("Não recomendado", "Not recommended") };
+    const mudou = ab.nivel !== a.nivel;
+    corpo = `<div class="compara">
+      <div class="ln"><span class="hint">${T("Planejado", "Planned")}: ${dataUTC(c.base, false)}</span><span class="hint">${T("Novo", "New")}: ${dataUTC(dataCenario(c), false)} (${c.slip > 0 ? "+" : ""}${c.slip} ${T("dias", "days")})</span></div>
+      ${linha(T("Tempo com sol", "Time with sunlight"), mb.pctSol, m.pctSol)}
+      ${linha(T("Tempo com a Terra à vista", "Time with Earth in view"), mb.pctTer, m.pctTer)}
+      <div class="ln"><span>${T("Veredito", "Verdict")}</span><span class="dl ${mudou ? (({ ok: 2, warn: 1, bad: 0 })[a.nivel] > ({ ok: 2, warn: 1, bad: 0 })[ab.nivel] ? "up" : "dn") : "eq"}">${mudou ? `${nomes[ab.nivel]} → ${nomes[a.nivel]}` : T(`continua "${nomes[a.nivel]}"`, `still "${nomes[a.nivel]}"`)}</span></div>
+    </div>`;
+  }
+  return `<div class="atraso slip"><h4>${T("E se o foguete atrasar?", "What if the launch slips?")}</h4><div class="bts">${bts}</div>
+    <input type="range" data-f="slip" min="-60" max="60" step="1" value="${c.slip}" aria-label="${T("Ajuste fino do atraso, em dias", "Fine-tune the delay, in days")}">
+    ${corpo}</div>`;
+}
+function renderCards() {
+  renderResultado();
+  const box = $("cards");
+  const ic = S.offsetH;
+  const titulos = { ok: T("Bom local para pousar", "Good place to land"), warn: T("Atenção: tem um problema", "Caution: one problem"), bad: T("Não recomendado", "Not recommended") };
+  const icones = { ok: "✓", warn: "!", bad: "✕" };
+  box.innerHTML = S.cenarios.map((c, k) => {
+    const l = local(c.local); if (!l) return "";
+    const { i0, i1, cortada } = janelaCenario(c);
+    const m = metricas(l, i0, i1), a = avaliar(m);
+    const i = clamp(i0 + Math.round(ic / S.passoH), 0, S.n - 1);
+    const ag = textoAgora(l, i);
+    const motivo = a.falhas.length ? a.falhas[0] + (a.falhas.length > 1 ? T(` (e mais ${a.falhas.length - 1})`, ` (and ${a.falhas.length - 1} more)`) : "") : T("Sol e contato com a Terra suficientes", "Enough sunlight and contact with Earth");
+    const aprox = l.custom ? `<div class="hint">${T("Estimativa aproximada: modelo simplificado, sem relevo.", "Rough estimate: simplified model, no terrain.")}</div>` : "";
+    return `<div class="card${k === S.ativo ? " ativo" : ""}" data-k="${k}">
+      ${k === S.ativo ? `<span class="tag">${T("em destaque abaixo", "shown below")}</span>` : ""}
+      <div class="row"><select data-f="local" aria-label="${T("Local de pouso", "Landing site")}">${opcoesLocais(c.local)}</select>
+        ${S.cenarios.length > 1 ? `<button class="btn small" data-f="rm" title="${T("Remover plano", "Remove plan")}" aria-label="${T("Remover plano", "Remove plan")}">✕</button>` : ""}</div>
+      <div class="row"><span class="lbl-dt">${T("Data do pouso", "Landing date")}</span><input type="date" data-f="data" value="${isoDia(c.base)}" min="${isoDia(S.t0)}" max="${isoDia(msDe(S.n - 1))}"></div>
+      <div class="veredito ${a.nivel} status" title="${esc(a.falhas.join(" · ") || motivo)}"><span class="vi">${icones[a.nivel]}</span><div><b>${titulos[a.nivel]}</b><small>${esc(motivo)}</small></div></div>
+      <div class="hint">${T(`Nos ${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} dias após o pouso:`, `In the ${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} days after landing:`)}</div>
+      <div class="aneis metrics">
+        ${anel(m.pctSol, "var(--sun)", T("com sol", "sunlight"))}
+        ${anel(m.pctTer, "var(--earth)", T("Terra à vista", "Earth in view"))}
+        ${anel(m.pctAmb, "var(--ok)", T("os dois juntos", "both at once"))}
+      </div>
+      <div class="extras only-plan">
+        <div class="m"><div class="v" style="color:var(--sun)">${fmt(serie(l).sol_el[i], 1)}°</div><div class="k">${T(`altura do Sol agora (máx. ${fmt(m.solElMax, 1)}°)`, `Sun height now (max ${fmt(m.solElMax, 1)}°)`)}</div></div>
+        <div class="m"><div class="v">${dur(m.noiteMaxH)}</div><div class="k">${T("maior escuridão seguida", "longest darkness")}</div></div>
+        <div class="m"><div class="v">${dur(m.semTerraMaxH)}</div><div class="k">${T("maior tempo sem contato", "longest without contact")}</div></div>
+        <div class="m"><div class="v">${fmt(m.irr)}</div><div class="k">${T("W/m² médio no painel", "average W/m² on the panel")}</div></div>
+      </div>
+      <div class="agora">
+        <div class="hint">${S.offsetH ? dur(S.offsetH) + T(" após o pouso", " after landing") : T("Na hora do pouso", "At landing")}:</div>
+        <div class="pills">
+          <div class="pill sol${ag.f > 0 ? " on" : ""}" title="${esc(ag.solD)}"><span class="em">☀️</span><div><b>${ag.solC}</b><small>${ag.solS}</small></div></div>
+          <div class="pill ter${ag.te ? " on" : ""}" title="${esc(ag.terD)}"><span class="em">🌍</span><div><b>${ag.terC}</b><small>${ag.terS}</small></div></div>
+        </div>
+      </div>
+      ${blocoAtraso(c, l, m, a)}
+      ${aprox}
+      <div class="frase only-exp">${frase(l, m)}</div>
+      ${cortada ? `<div class="hint">${T("Os dados acabam antes do fim do período analisado.", "The data ends before the end of the analyzed period.")}</div>` : ""}
+    </div>`;
+  }).join("") + (S.cenarios.length < 4 ? `<button class="addcard" id="add">${T("+ Comparar com outro plano", "+ Compare with another plan")}</button>` : "");
+
+  box.querySelectorAll(".card").forEach(el => {
+    const k = +el.dataset.k, c = S.cenarios[k];
+    el.addEventListener("click", e => { if (e.target.closest("select,input,button")) return; S.ativo = k; renderTudo(); });
+    el.querySelector('[data-f="local"]').addEventListener("change", e => {
+      if (e.target.value === "__custom") { abrirCustom(k); e.target.value = c.local; return; }
+      c.local = e.target.value; S.ativo = k; renderTudo();
+    });
+    el.querySelector('[data-f="data"]').addEventListener("change", e => {
+      const ms = Date.parse(e.target.value + "T00:00:00Z"); if (!isNaN(ms)) { c.base = ms; c.slip = 0; S.ativo = k; renderTudo(); }
+    });
+    el.querySelector('[data-f="slip"]').addEventListener("input", e => { c.slip = +e.target.value; S.ativo = k; renderTudo(); });
+    el.querySelectorAll('[data-f="atr"]').forEach(b => b.addEventListener("click", () => { c.slip = +b.dataset.d; S.ativo = k; renderTudo(); }));
+    const rm = el.querySelector('[data-f="rm"]');
+    if (rm) rm.addEventListener("click", () => { S.cenarios.splice(k, 1); S.ativo = clamp(S.ativo, 0, S.cenarios.length - 1); renderTudo(); });
+  });
+  const add = $("add");
+  if (add) add.addEventListener("click", () => {
+    const ref = S.cenarios[S.ativo] || S.cenarios[0];
+    const usados = new Set(S.cenarios.map(c => c.local));
+    const prox = S.D.locais.find(l => !usados.has(l.id)) || S.D.locais[0];
+    S.cenarios.push({ uid: uid++, local: prox.id, base: ref ? ref.base : S.t0, slip: 0 });
+    S.ativo = S.cenarios.length - 1; renderTudo();
+  });
+}
+
+/* Coordenada personalizada */
+let customAlvo = 0;
+function abrirCustom(k) {
+  customAlvo = k;
+  const real = !S.D.meta.demo;
+  $("customMsg").innerHTML = real
+    ? T("Com dados reais, um local novo precisa ser calculado pelos scripts (posições de Sol e Terra mais o relevo LOLA). Adicione uma linha no <code>locais.csv</code> e rode o pipeline de novo.", "With real data, a new site has to be computed by the scripts (Sun and Earth positions plus LOLA terrain). Add a line to <code>locais.csv</code> and run the pipeline again.")
+    : T("Usa um modelo simplificado de Sol e Terra, sem relevo. Serve para explorar, não para planejar.", "Uses a simplified Sun and Earth model, with no terrain. Good for exploring, not for planning.");
+  $("customCampos").style.display = real ? "none" : "grid";
+  $("cOk").style.display = real ? "none" : "";
+  $("cCancel").textContent = real ? T("Entendi", "Got it") : T("Cancelar", "Cancel");
+  $("modal").classList.add("on");
+}
+$("cCancel").onclick = () => $("modal").classList.remove("on");
+$("cOk").onclick = () => {
+  const lat = clamp(+$("cLat").value, -89.999, 89.999), lon = ((+$("cLon").value % 360) + 360) % 360;
+  const id = `custom_${uid++}`;
+  S.D.locais.push({ id, nome: `${$("cNome").value || T("Local", "Site")} (${fmt(lat, 2)}°, ${fmt(lon, 2)}°${T("L", "E")})`, lat, lon_leste: lon, categoria: "Personalizados", custom: true, horizonte: null });
+  S.cenarios[customAlvo].local = id; S.ativo = customAlvo;
+  $("modal").classList.remove("on"); renderTudo();
+};
+
+/* =========================================================================
+   Panorama do horizonte (SVG)
+   ========================================================================= */
+function renderPano() {
+  const c = S.cenarios[S.ativo]; if (!c) return;
+  const l = local(c.local), s = serie(l), v = vis(l);
+  const svg = $("pano"), W = svg.clientWidth || 900, Ht = 360, padL = 40, padR = 12, padT = 16, padB = 28;
+  const { i0, i1 } = janelaCenario(c);
+  const ic = clamp(i0 + Math.round(S.offsetH / S.passoH), 0, S.n - 1);
+  const hor = [];
+  for (let a = 0; a <= 360; a += 0.5) hor.push([a, H(l, a)]);
+  const horReal = (l.horizonte && l.horizonte.el) ? Array.from({ length: 721 }, (_, k) => { const sv = S.relevo; S.relevo = true; const h = H(l, k * 0.5); S.relevo = sv; return [k * 0.5, h]; }) : null;
+
+  let yMax = 4, yMin = -1.5;
+  for (const [, h] of hor) { yMax = Math.max(yMax, h + 1); yMin = Math.min(yMin, h - 1); }
+  for (let i = i0; i < i1; i++) { yMax = Math.max(yMax, s.sol_el[i] + 1, s.terra_el[i] + 1.5); }
+  if (horReal) for (const [, h] of horReal) yMax = Math.max(yMax, h + 1);
+  yMax = Math.min(90, yMax); yMin = Math.max(-5, Math.min(yMin, -1));
+  const X = a => padL + (a / 360) * (W - padL - padR), Y = e => padT + (yMax - e) / (yMax - yMin) * (Ht - padT - padB);
+  const pxX = (W - padL - padR) / 360, pxY = (Ht - padT - padB) / (yMax - yMin);
+
+  const caminho = (az, el) => {
+    let d = "", prev = null;
+    for (let i = i0; i < i1; i++) {
+      const a = az[i], e = el[i];
+      d += (prev != null && Math.abs(a - prev) > 180 ? "M" : (d ? "L" : "M")) + X(a).toFixed(1) + " " + Y(e).toFixed(1);
+      prev = a;
+    }
+    return d;
+  };
+  const chao = "M" + X(0) + " " + Y(yMin - 10) + hor.map(([a, h]) => `L${X(a).toFixed(1)} ${Y(h).toFixed(1)}`).join("") + `L${X(360)} ${Y(yMin - 10)}Z`;
+  let grade = "";
+  const passoY = yMax - yMin > 40 ? 15 : yMax - yMin > 15 ? 5 : yMax - yMin > 6 ? 2 : 1;
+  for (let e = Math.ceil(yMin / passoY) * passoY; e <= yMax; e += passoY)
+    grade += `<line x1="${padL}" x2="${W - padR}" y1="${Y(e)}" y2="${Y(e)}" stroke="${e === 0 ? "#3a4a68" : "#151d2c"}" ${e === 0 ? 'stroke-dasharray="4 4"' : ""}/><text x="${padL - 6}" y="${Y(e) + 4}" fill="#6b768b" font-size="11" text-anchor="end">${e}°</text>`;
+  grade += `<text x="12" y="${padT + (Ht - padT - padB) / 2}" fill="#6b768b" font-size="10.5" text-anchor="middle" transform="rotate(-90 12 ${padT + (Ht - padT - padB) / 2})">${T("altura no céu", "height in the sky")}</text>`;
+  const card = LANG === "en" ? [[0, "N"], [45, "NE"], [90, "E"], [135, "SE"], [180, "S"], [225, "SW"], [270, "W"], [315, "NW"], [360, "N"]] : [[0, "N"], [45, "NE"], [90, "L"], [135, "SE"], [180, "S"], [225, "SO"], [270, "O"], [315, "NO"], [360, "N"]];
+  const eixoX = card.map(([a, t]) => `<text x="${X(a)}" y="${Ht - 8}" fill="${t.length === 1 ? "#cdd6e6" : "#6b768b"}" font-size="${t.length === 1 ? 12.5 : 11}" font-weight="${t.length === 1 ? 600 : 400}" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif">${t}</text>`).join("");
+
+  const rS = Math.max(6, SOL_R * pxY), rT = Math.max(7, TERRA_R * pxY);
+  const sa = s.sol_az[ic], se = s.sol_el[ic], ta = s.terra_az[ic], te = s.terra_el[ic];
+  const fantasma = (!S.relevo && horReal) ? `<path d="M${horReal.map(([a, h]) => `${X(a).toFixed(1)} ${Y(h).toFixed(1)}`).join("L")}" fill="none" stroke="#c46a6a" stroke-dasharray="3 3" stroke-width="1.2"/>` : "";
+
+  const rs = rng(7); let estrelas = "";
+  for (let k = 0; k < Math.round(W / 6); k++) estrelas += `<circle cx="${(padL + rs() * (W - padL - padR)).toFixed(1)}" cy="${(padT + rs() * (Ht - padT - padB)).toFixed(1)}" r="${(0.3 + rs() * 0.9).toFixed(2)}" fill="#fff" opacity="${(0.25 + rs() * 0.6).toFixed(2)}"/>`;
+  const solVis = v.sol[ic] > 0;
+  const crista = "M" + hor.map(([a, h]) => `${X(a).toFixed(1)} ${Y(h).toFixed(1)}`).join("L");
+  svg.setAttribute("viewBox", `0 0 ${W} ${Ht}`);
+  svg.innerHTML = `
+    <defs><linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02040a"/><stop offset="1" stop-color="#070d1b"/></linearGradient>
+    <linearGradient id="terreno" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8f897d"/><stop offset=".35" stop-color="#4d4a44"/><stop offset="1" stop-color="#181816"/></linearGradient>
+    <radialGradient id="gSol"><stop offset="0" stop-color="#fffbe8"/><stop offset=".35" stop-color="#ffd768"/><stop offset=".6" stop-color="#ffd24a" stop-opacity=".35"/><stop offset="1" stop-color="#ffd24a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gTerra" cx=".35" cy=".35"><stop offset="0" stop-color="#d9f0ff"/><stop offset=".45" stop-color="#4d9ef0"/><stop offset="1" stop-color="#123a66"/></radialGradient>
+    <clipPath id="area"><rect x="${padL}" y="${padT}" width="${W - padL - padR}" height="${Ht - padT - padB}" rx="8"/></clipPath></defs>
+    <rect x="0" y="0" width="${W}" height="${Ht}" fill="#0a1120"/>
+    <rect x="${padL}" y="${padT}" width="${W - padL - padR}" height="${Ht - padT - padB}" rx="8" fill="url(#ceu)"/>
+    <g clip-path="url(#area)">${estrelas}</g>
+    ${grade}
+    <g clip-path="url(#area)">
+      <path d="${caminho(s.sol_az, s.sol_el)}" fill="none" stroke="#ffd24a" stroke-opacity=".55" stroke-width="1.6" stroke-dasharray="1 4" stroke-linecap="round"/>
+      <path d="${caminho(s.terra_az, s.terra_el)}" fill="none" stroke="#4fd1ff" stroke-opacity=".6" stroke-width="1.6" stroke-dasharray="1 4" stroke-linecap="round"/>
+      <circle cx="${X(sa)}" cy="${Y(se)}" r="${rS * 4}" fill="url(#gSol)"/>
+      <circle cx="${X(sa)}" cy="${Y(se)}" r="${rS}" fill="#fff3c4"/>
+      <circle cx="${X(ta)}" cy="${Y(te)}" r="${rT}" fill="url(#gTerra)"/>
+      <text x="${X(sa)}" y="${Y(se) - rS - 8}" fill="#ffd768" font-size="12.5" font-weight="600" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif">${T("Sol", "Sun")}</text>
+      <text x="${X(ta)}" y="${Y(te) - rT - 8}" fill="#a9d4ff" font-size="12.5" font-weight="600" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif">${T("Terra", "Earth")}</text>
+      <path d="${chao}" fill="url(#terreno)"/>
+      <path d="${crista}" fill="none" stroke="${solVis ? "#ffd768" : "#a7a196"}" stroke-opacity="${solVis ? .75 : .5}" stroke-width="${solVis ? 1.8 : 1}"/>
+      ${fantasma}
+      <text x="${padL + 10}" y="${Ht - padB - 8}" fill="#f1ede4" font-size="11.5" opacity=".8">${S.relevo && l.horizonte ? T("chão e montanhas ao redor", "ground and surrounding mountains") : T("chão (sem montanhas)", "ground (no mountains)")}</text>
+      <text x="${W - padR - 10}" y="${padT + 18}" fill="#8e9ab0" font-size="11.5" text-anchor="end">${T("céu (preto mesmo de dia: a Lua não tem ar)", "sky (black even by day: the Moon has no air)")}</text>
+      ${fantasma ? `<text x="${W - padR - 8}" y="${padT + 32}" fill="#c46a6a" font-size="11" text-anchor="end">${T("linha vermelha = onde as montanhas reais estariam", "red line = where the real mountains would be")}</text>` : ""}
+    </g>
+    ${eixoX}
+    <rect id="hov" x="${padL}" y="${padT}" width="${W - padL - padR}" height="${Ht - padT - padB}" fill="transparent"/>`;
+
+  const exag = pxY / pxX;
+  $("exagero").textContent = exag > 1.5 ? T(`As alturas estão esticadas ${fmt(exag)}× para dar para ver (as montanhas parecem mais altas do que são)`, `Heights are stretched ${fmt(exag)}× so you can see them (mountains look taller than they are)`) : T("Tamanhos de Sol e Terra fora de escala", "Sun and Earth sizes not to scale");
+  $("panoTitulo").textContent = T(`O céu visto de: ${nomeLocal(l)}`, `The sky seen from: ${nomeLocal(l)}`);
+  const agP = textoAgora(l, ic);
+  $("chip").innerHTML = `<span><i class="pt sol${agP.f > 0 ? "" : " off"}"></i>${agP.f > 0 ? T("Sol visível", "Sun visible") : T("Sol escondido", "Sun hidden")} · ${fmt(s.sol_el[ic], 1)}° ${T("de altura", "high")}</span><span><i class="pt ter${agP.te ? "" : " off"}"></i>${agP.te ? T("Terra visível", "Earth visible") : T("Terra escondida", "Earth hidden")}</span>`;
+  $("clock").textContent = `${S.offsetH ? dur(S.offsetH) + T(" após o pouso", " after landing") : T("Hora do pouso", "Landing time")} · ${dataUTC(msDe(ic))}`;
+  const cur = $("cursor"); cur.max = janelaN() * S.passoH; cur.step = S.passoH; cur.value = S.offsetH;
+
+  // texto explicativo do panorama (modo Explorar)
+  let pf = "";
+  if (l.horizonte && l.horizonte.el) {
+    let mx = -99, am = 0; for (let k = 0; k < l.horizonte.el.length; k++) if (l.horizonte.el[k] > mx) { mx = l.horizonte.el[k]; am = k * 360 / l.horizonte.el.length; }
+    const dist = l.horizonte.dist_km ? l.horizonte.dist_km[Math.round(am / (360 / l.horizonte.el.length))] : null;
+    pf = T(`O ponto mais alto do horizonte fica na direção ${dirTxt(am)}, a ${fmt(mx, 1)}°${dist ? `, numa elevação a ${fmt(dist)} km de distância` : ""}. `, `The highest point of the horizon is to the ${dirTxt(am)}, at ${fmt(mx, 1)}°${dist ? `, on a rise ${fmt(dist)} km away` : ""}. `);
+  }
+  const m = metricas(l, i0, i1);
+  pf += T(`Neste período o Sol sobe no máximo ${fmt(m.solElMax, 1)}° e a Terra fica entre ${fmt(m.terraMin, 1)}° e ${fmt(m.terraMax, 1)}°. `, `In this period the Sun rises at most ${fmt(m.solElMax, 1)}° and Earth stays between ${fmt(m.terraMin, 1)}° and ${fmt(m.terraMax, 1)}°. `);
+  if (Math.abs(l.lat) > 75) pf += T("No polo o Sol não sobe: ele dá a volta inteira no horizonte ao longo de cerca de 29,5 dias, rente ao chão. Qualquer morro no caminho apaga os painéis.", "At the pole the Sun does not climb: it circles the whole horizon over about 29.5 days, skimming the ground. Any hill in the way switches the panels off.");
+  else pf += T("Longe do polo o Sol sobe alto no céu e o relevo pesa pouco; o desafio é a noite de cerca de 14 dias.", "Away from the pole the Sun climbs high and terrain matters little; the challenge is the night of about 14 days.");
+  $("panoFrase").textContent = pf;
+
+  // tooltip
+  const tip = $("tip"), hov = svg.querySelector("#hov");
+  hov.onmousemove = e => {
+    const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * (W / r.width);
+    const a = clamp((x - padL) / pxX, 0, 360), h = H(l, a);
+    let d = null; if (S.relevo && l.horizonte && l.horizonte.dist_km) d = l.horizonte.dist_km[Math.round(a / (360 / l.horizonte.el.length)) % l.horizonte.el.length];
+    tip.style.display = "block"; tip.style.left = (e.clientX - r.left + 12) + "px"; tip.style.top = (e.clientY - r.top + 10) + "px";
+    tip.innerHTML = T(`Direção ${fmt(a, 1)}° (${dirTxt(a)})<br>Horizonte: ${fmt(h, 2)}°${d ? `<br>Terreno que bloqueia: a ${fmt(d, 1)} km` : ""}`, `Direction ${fmt(a, 1)}° (${dirTxt(a)})<br>Horizon: ${fmt(h, 2)}°${d ? `<br>Blocking terrain: ${fmt(d, 1)} km away` : ""}`);
+  };
+  hov.onmouseleave = () => tip.style.display = "none";
+}
+function dirTxt(a) { return (LANG === "en" ? ["north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"] : ["norte", "nordeste", "leste", "sudeste", "sul", "sudoeste", "oeste", "noroeste"])[Math.round(a / 45) % 8]; }
+
+/* =========================================================================
+   Linha do tempo
+   ========================================================================= */
+function renderTL() {
+  const svg = $("tl"), W = svg.clientWidth || 900, padL = 200, padR = 10, linha = 30, topo = 22;
+  const N = janelaN(), Ht = topo + S.cenarios.length * (linha * 2 + 10) + 6;
+  const X = j => padL + j / N * (W - padL - padR);
+  let h = "";
+  const dias = S.janelaDias, passoD = dias > 30 ? 7 : dias > 10 ? 2 : 1;
+  for (let d = 0; d <= dias; d += passoD) h += `<line x1="${X(d * 24 / S.passoH)}" x2="${X(d * 24 / S.passoH)}" y1="${topo - 4}" y2="${Ht}" stroke="#172033"/><text x="${X(d * 24 / S.passoH)}" y="${topo - 8}" fill="#6b768b" font-size="10.5" text-anchor="middle">${d === 0 ? T("pouso", "landing") : "+" + d + "d"}</text>`;
+  S.cenarios.forEach((c, k) => {
+    const l = local(c.local); if (!l) return;
+    const v = vis(l), { i0, i1 } = janelaCenario(c), y = topo + k * (linha * 2 + 10);
+    h += `<text x="8" y="${y + 13}" fill="${k === S.ativo ? "#edf1f7" : "#a3adc0"}" font-size="12.5" font-weight="${k === S.ativo ? 600 : 400}" font-family="Bricolage Grotesque, sans-serif">${esc(nomeLocal(l).length > 22 ? nomeLocal(l).slice(0, 21) + "…" : nomeLocal(l))}</text>`;
+    h += `<text x="8" y="${y + 28}" fill="#6b768b" font-size="10.5">${dataUTC(dataCenario(c), false)}</text>`;
+    h += `<rect x="${padL}" y="${y}" width="${W - padL - padR}" height="${linha - 6}" fill="#1a2336" rx="6"/>`;
+    h += `<rect x="${padL}" y="${y + linha}" width="${W - padL - padR}" height="${linha - 6}" fill="#111a2b" rx="6"/>`;
+    let j = 0; const tam = i1 - i0;
+    const est = i => { const f = v.sol[i]; return f >= 0.999 ? 2 : f > 0 ? 1 : 0; };
+    while (j < tam) { let e = est(i0 + j), k2 = j; while (k2 < tam && est(i0 + k2) === e) k2++; if (e) h += `<rect x="${X(j).toFixed(1)}" y="${y}" width="${(X(k2) - X(j)).toFixed(1)}" height="${linha - 6}" rx="5" fill="${e === 2 ? "#ffd24a" : "#e08a2e"}"/>`; j = k2; }
+    j = 0;
+    while (j < tam) { let e = v.ter[i0 + j], k2 = j; while (k2 < tam && v.ter[i0 + k2] === e) k2++; if (e) h += `<rect x="${X(j).toFixed(1)}" y="${y + linha}" width="${(X(k2) - X(j)).toFixed(1)}" height="${linha - 6}" rx="5" fill="#4fd1ff"/>`; j = k2; }
+    h += `<text x="${padL - 10}" y="${y + 16}" fill="#9aa4b8" font-size="11" text-anchor="end">${T("Sol", "Sun")}</text><text x="${padL - 10}" y="${y + linha + 16}" fill="#9aa4b8" font-size="11" text-anchor="end">${T("Terra", "Earth")}</text>`;
+  });
+  const xc = X(S.offsetH / S.passoH);
+  h += `<line x1="${xc}" x2="${xc}" y1="${topo - 4}" y2="${Ht}" stroke="#ffffff" stroke-width="2"/><circle cx="${xc}" cy="${topo - 4}" r="4" fill="#fff"/>`;
+  h += `<rect id="tlhit" x="${padL}" y="0" width="${W - padL - padR}" height="${Ht}" fill="transparent" style="cursor:pointer"/>`;
+  svg.setAttribute("viewBox", `0 0 ${W} ${Ht}`); svg.setAttribute("height", Ht); svg.innerHTML = h;
+  svg.querySelector("#tlhit").onclick = e => {
+    const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * (W / r.width);
+    S.offsetH = Math.round(clamp((x - padL) / (W - padL - padR), 0, 1) * N) * S.passoH; renderTempo();
+  };
+  $("tlSub").textContent = T(`Mostrando ${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} dias após o pouso`, `Showing ${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} days after landing`);
+}
+
+/* =========================================================================
+   Melhores datas (busca de janelas)
+   ========================================================================= */
+S.anoCal = null;
+function renderHeat() {
+  const c = S.cenarios[S.ativo]; if (!c) return;
+  const l = local(c.local), v = vis(l);
+  const porDia = Math.round(24 / S.passoH), N = janelaN();
+  const dias = Math.max(1, Math.floor((S.n - N) / porDia) + 1);
+  const sSol = new Uint32Array(S.n + 1), sTer = new Uint32Array(S.n + 1), sAmb = new Uint32Array(S.n + 1);
+  for (let i = 0; i < S.n; i++) { const a = v.sol[i] > 0, b = v.ter[i] === 1; sSol[i + 1] = sSol[i] + a; sTer[i + 1] = sTer[i] + b; sAmb[i + 1] = sAmb[i] + (a && b); }
+  const res = [];
+  for (let d = 0; d < dias; d++) {
+    const i0 = d * porDia, i1 = Math.min(S.n, i0 + N);
+    if (i1 - i0 < N) break;
+    let noite = 0, nmax = 0;
+    for (let i = i0; i < i1; i++) { noite = v.sol[i] > 0 ? 0 : noite + 1; if (noite > nmax) nmax = noite; }
+    const m = { pctSol: 100 * (sSol[i1] - sSol[i0]) / N, pctTer: 100 * (sTer[i1] - sTer[i0]) / N, pctAmb: 100 * (sAmb[i1] - sAmb[i0]) / N, noiteMaxH: nmax * S.passoH };
+    res.push({ d, ms: msDe(i0), m, ok: avaliar(m).nivel === "ok" });
+  }
+  const porDiaKey = new Map(res.map(r => [isoDia(r.ms), r]));
+  const cor = r => {
+    if (!r.ok) return r.m.pctAmb > 30 ? "#4a2a36" : "#3a2230";
+    const t = r.m.pctAmb;
+    return t >= 85 ? "#7ef0b0" : t >= 65 ? "#3fb37a" : t >= 45 ? "#2f7a57" : "#2c4a3e";
+  };
+  const anoIni = new Date(S.t0).getUTCFullYear(), anoFim = new Date(msDe(S.n - 1)).getUTCFullYear();
+  const anoSel = new Date(dataCenario(c)).getUTCFullYear();
+  if (S.anoCal == null || S.anoCal < anoIni || S.anoCal > anoFim) S.anoCal = clamp(anoSel, anoIni, anoFim);
+  let anosH = "";
+  for (let a = anoIni; a <= anoFim; a++) anosH += `<button class="btn small${a === S.anoCal ? " on" : ""}" data-ano="${a}">${a}</button>`;
+  $("anos").innerHTML = anosH;
+  $("anos").querySelectorAll("button").forEach(b => b.onclick = () => { S.anoCal = +b.dataset.ano; renderHeat(); });
+  const selKey = isoDia(dataCenario(c));
+  let h = "";
+  for (let mes = 0; mes < 12; mes++) {
+    const primeiro = Date.UTC(S.anoCal, mes, 1);
+    const nd = new Date(Date.UTC(S.anoCal, mes + 1, 0)).getUTCDate();
+    const nome = new Date(primeiro).toLocaleDateString(LOC(), { timeZone: "UTC", month: "short" }).replace(".", "");
+    h += `<div class="mes"><span class="ml">${nome}</span>`;
+    for (let d = 1; d <= 31; d++) {
+      if (d > nd) { h += `<span class="d vz"></span>`; continue; }
+      const key = `${S.anoCal}-${String(mes + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const r = porDiaKey.get(key);
+      if (!r) { h += `<span class="d na" title="${d} ${nome}: ${T("sem dados para analisar", "no data to analyze")}"></span>`; continue; }
+      const tip = T(`${d} ${nome} ${S.anoCal}: ${fmt(r.m.pctAmb)}% do tempo com sol e Terra · maior escuridão ${dur(r.m.noiteMaxH)}${r.ok ? "" : " · não cumpre as regras"}`, `${nome} ${d}, ${S.anoCal}: ${fmt(r.m.pctAmb)}% of the time with Sun and Earth · longest darkness ${dur(r.m.noiteMaxH)}${r.ok ? "" : " · fails the rules"}`);
+      h += `<button class="d${key === selKey ? " sel" : ""}" style="background:${cor(r)}" data-ms="${r.ms}" title="${tip}" aria-label="${tip}"></button>`;
+    }
+    h += `</div>`;
+  }
+  const cal = $("heat"); cal.innerHTML = h;
+  cal.querySelectorAll("button.d").forEach(b => b.onclick = () => { c.base = +b.dataset.ms; c.slip = 0; renderTudo(); });
+  $("heatTitulo").textContent = T(`Qual o melhor dia para pousar em ${nomeLocal(l)}?`, `What is the best day to land at ${nomeLocal(l)}?`);
+  const viaveis = res.filter(r => r.ok);
+  const ordem = (viaveis.length ? viaveis : res).slice().sort((a, b) => b.m.pctAmb - a.m.pctAmb);
+  const top = []; for (const r of ordem) { if (top.every(t => Math.abs(t.d - r.d) > 6)) top.push(r); if (top.length === 4) break; }
+  $("top").innerHTML = (viaveis.length ? "" : `<div class="hint">${T("Nenhum dia é bom neste local. Abaixo, os menos ruins.", "No day is good at this site. Below, the least bad ones.")}</div>`) +
+    top.map((r, k) => `<div class="m"><div><div style="font-weight:600;font-family:var(--disp)">${k === 0 && viaveis.length ? `<span class="melhor">${T("melhor", "best")}</span> ` : ""}${dataUTC(r.ms, false)}</div><div class="k">${T(`${fmt(r.m.pctAmb)}% do tempo com sol e Terra · maior escuridão ${dur(r.m.noiteMaxH)}`, `${fmt(r.m.pctAmb)}% of the time with Sun and Earth · longest darkness ${dur(r.m.noiteMaxH)}`)}</div></div><button class="btn small" data-ms="${r.ms}">${T("Usar", "Use")}</button></div>`).join("");
+  $("top").querySelectorAll("button").forEach(b => b.onclick = () => { c.base = +b.dataset.ms; c.slip = 0; S.anoCal = new Date(+b.dataset.ms).getUTCFullYear(); renderTudo(); });
+}
+
+/* =========================================================================
+   Mapa do polo sul
+   ========================================================================= */
+const R_LUA_KM = 1737.4;
+function projPolar(lat, lon) {
+  const p = 2 * R_LUA_KM * 1000 * Math.tan(Math.PI / 4 + lat * RAD / 2);
+  return [p * Math.sin(lon * RAD), p * Math.cos(lon * RAD)];
+}
+const COR_NIVEL = { ok: "#3ddc84", warn: "#ffb347", bad: "#ff5c5c" };
+function renderMapa() {
+  const c = S.cenarios[S.ativo]; if (!c) return;
+  const mapa = S.D.meta.mapa;
+  const E = mapa ? mapa.extensao_m : 2 * R_LUA_KM * 1000 * Math.tan(5.2 * RAD);
+  const Z = 560, P = (lat, lon) => { const [x, y] = projPolar(lat, lon); return [(x + E) / (2 * E) * Z, (E - y) / (2 * E) * Z]; };
+  const dentro = S.D.locais.filter(l => { const [x, y] = projPolar(l.lat, l.lon_leste); return Math.abs(x) < E && Math.abs(y) < E; });
+  const sec = $("secMapa");
+  if (!dentro.length) { sec.style.display = "none"; return; }
+  sec.style.display = "";
+  const ms = dataCenario(c), i0 = idxDe(ms), i1 = Math.min(S.n, i0 + janelaN());
+  const res = dentro.map(l => { const m = metricas(l, i0, i1); return { l, m, a: avaliar(m) }; });
+  let h = `<defs><clipPath id="cm"><rect width="${Z}" height="${Z}" rx="12"/></clipPath>
+    <radialGradient id="gm"><stop offset="0" stop-color="#2a2a28"/><stop offset="1" stop-color="#121722"/></radialGradient></defs><g clip-path="url(#cm)">`;
+  h += mapa ? `<image href="data:image/png;base64,${mapa.png_base64}" x="0" y="0" width="${Z}" height="${Z}" preserveAspectRatio="none"/>`
+            : `<rect width="${Z}" height="${Z}" fill="url(#gm)"/><text x="${Z - 14}" y="${Z - 14}" fill="#8e9ab0" font-size="11.5" text-anchor="end">${T("Relevo sombreado aparece com os dados reais", "Shaded terrain appears with the real data")}</text>`;
+  // grade: paralelos e meridianos
+  for (const lat of [-89, -88, -87, -86, -85, -84, -82, -80]) {
+    const [x] = projPolar(lat, 90); const r = x / (2 * E) * Z;
+    if (r > Z * 0.72) continue;
+    h += `<circle cx="${Z / 2}" cy="${Z / 2}" r="${r.toFixed(1)}" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-dasharray="3 4"/>`;
+    h += `<text x="${Z / 2 + 3}" y="${Z / 2 - r - 3}" fill="#ffffff" fill-opacity=".55" font-size="10">${Math.abs(lat)}°S</text>`;
+  }
+  for (let lon = 0; lon < 360; lon += 30) {
+    const ang = lon * RAD, x2 = Z / 2 + Math.sin(ang) * Z, y2 = Z / 2 - Math.cos(ang) * Z;
+    h += `<line x1="${Z / 2}" y1="${Z / 2}" x2="${x2}" y2="${y2}" stroke="#ffffff" stroke-opacity=".08"/>`;
+  }
+  const rotLon = [[0, "0°"], [90, T("90°L", "90°E")], [180, "180°"], [270, T("90°O", "90°W")]];
+  for (const [lon, t] of rotLon) {
+    const ang = lon * RAD, rr = Z / 2 - 14;
+    h += `<text x="${Z / 2 + Math.sin(ang) * rr}" y="${Z / 2 - Math.cos(ang) * rr + 4}" fill="#cdd6e6" font-size="11" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif">${t}</text>`;
+  }
+  h += `<text x="${Z / 2}" y="${Z / 2 + 4}" fill="#fff" font-size="16" text-anchor="middle">+</text><text x="${Z / 2 + 8}" y="${Z / 2 + 16}" fill="#fff" fill-opacity=".7" font-size="10">${T("polo sul", "south pole")}</text>`;
+  // escala
+  const km = (2 * E / 1000) / Z, barra = [10, 20, 50, 100].find(v => v / km > 60) || 100, bp = barra / km;
+  h += `<line x1="16" y1="${Z - 20}" x2="${16 + bp}" y2="${Z - 20}" stroke="#fff" stroke-width="2"/><text x="16" y="${Z - 26}" fill="#fff" font-size="11">${barra} km</text>`;
+  // locais
+  res.forEach(({ l, a }) => {
+    const [x, y] = P(l.lat, l.lon_leste), ativo = l.id === c.local;
+    h += `<g class="mk" data-id="${esc(l.id)}" style="cursor:pointer">
+      ${ativo ? `<circle cx="${x}" cy="${y}" r="13" fill="none" stroke="#fff" stroke-width="2"/>` : ""}
+      <circle cx="${x}" cy="${y}" r="7" fill="${COR_NIVEL[a.nivel]}" stroke="#0b1220" stroke-width="2"/>
+      ${ativo ? `<text x="${x + 16}" y="${y + 4}" fill="#fff" font-size="12.5" font-weight="600" font-family="Bricolage Grotesque, sans-serif" paint-order="stroke" stroke="#0b1220" stroke-width="3">${esc(nomeCurto(l))}</text>` : ""}
+      <circle cx="${x}" cy="${y}" r="14" fill="transparent"/></g>`;
+  });
+  h += `</g>`;
+  const svg = $("mapa"); svg.innerHTML = h;
+  const tip = $("tipMapa");
+  svg.querySelectorAll(".mk").forEach(g => {
+    const r = res.find(q => q.l.id === g.dataset.id);
+    g.onclick = () => { c.local = r.l.id; renderTudo(); };
+    g.onmousemove = e => {
+      const b = svg.getBoundingClientRect();
+      tip.style.display = "block"; tip.style.left = (e.clientX - b.left + 12) + "px"; tip.style.top = (e.clientY - b.top + 10) + "px";
+      tip.innerHTML = `<b>${esc(nomeLocal(r.l))}</b><br><i class="pt sol"></i>${fmt(r.m.pctSol)}% ${T("com sol", "sunlight")} &nbsp;<i class="pt ter"></i>${fmt(r.m.pctTer)}% ${T("com a Terra", "Earth in view")}`;
+    };
+    g.onmouseleave = () => tip.style.display = "none";
+  });
+  $("mapaTitulo").textContent = T(`Mapa do polo sul: como cada local se sai a partir de ${dataUTC(ms, false)}`, `South pole map: how each site does from ${dataUTC(ms, false)}`);
+  const peso = { ok: 2, warn: 1, bad: 0 };
+  const ord = res.slice().sort((x, y) => peso[y.a.nivel] - peso[x.a.nivel] || y.m.pctAmb - x.m.pctAmb);
+  $("ranking").innerHTML = `<div class="hint">${T(`Ranking nesta data (${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} dias após o pouso):`, `Ranking for this date (${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} days after landing):`)}</div>` + ord.map(({ l, m, a }, k) =>
+    `<button class="rk${l.id === c.local ? " on" : ""}" data-id="${esc(l.id)}"><span class="dt" style="background:${COR_NIVEL[a.nivel]}"></span>
+      <span><b>${k + 1}. ${esc(nomeLocal(l))}</b><small>${esc(catLocal(l))}</small></span>
+      <span class="nums"><i class="pt sol"></i>${fmt(m.pctSol)}% <i class="pt ter"></i>${fmt(m.pctTer)}%</span></button>`).join("");
+  $("ranking").querySelectorAll(".rk").forEach(b => b.onclick = () => { c.local = b.dataset.id; renderTudo(); });
+}
+
+/* =========================================================================
+   Altura do Sol (elevação) ao longo do período
+   ========================================================================= */
+function renderSol() {
+  const c = S.cenarios[S.ativo]; if (!c) return;
+  const l = local(c.local), s = serie(l), v = vis(l), { i0, i1 } = janelaCenario(c);
+  const ic = clamp(i0 + Math.round(S.offsetH / S.passoH), 0, S.n - 1);
+  const svg = $("solgraf"), W = svg.clientWidth || 800, Ht = 210, pl = 38, pr = 10, pt = 10, pb = 24;
+  let yMax = 1, yMin = -1;
+  for (let i = i0; i < i1; i++) { yMax = Math.max(yMax, s.sol_el[i], v.hs[i]); yMin = Math.min(yMin, s.sol_el[i], v.hs[i]); }
+  yMax = Math.min(90, yMax + 0.6); yMin = Math.max(-90, yMin - 0.6);
+  const N = Math.max(1, i1 - i0), X = j => pl + j / N * (W - pl - pr), Y = e => pt + (yMax - e) / (yMax - yMin) * (Ht - pt - pb);
+  let luz = "", j = 0;
+  while (j < N) { const on = v.sol[i0 + j] > 0; let k = j; while (k < N && (v.sol[i0 + k] > 0) === on) k++; if (on) luz += `<rect x="${X(j)}" y="${pt}" width="${X(k) - X(j)}" height="${Ht - pt - pb}" fill="#ffd24a" opacity=".07"/>`; j = k; }
+  let lin = "", mont = `M${X(0)} ${Y(yMin)}`;
+  for (let k = 0; k < N; k++) { lin += (k ? "L" : "M") + X(k).toFixed(1) + " " + Y(s.sol_el[i0 + k]).toFixed(1); mont += `L${X(k).toFixed(1)} ${Y(S.relevo ? v.hs[i0 + k] : 0).toFixed(1)}`; }
+  mont += `L${X(N - 1)} ${Y(yMin)}Z`;
+  let grade = ""; const pas = yMax - yMin > 40 ? 15 : yMax - yMin > 12 ? 5 : yMax - yMin > 5 ? 1 : 0.5;
+  for (let e = Math.ceil(yMin / pas) * pas; e <= yMax; e += pas) grade += `<line x1="${pl}" x2="${W - pr}" y1="${Y(e)}" y2="${Y(e)}" stroke="${Math.abs(e) < 1e-9 ? "#3a4a68" : "#172033"}" ${Math.abs(e) < 1e-9 ? 'stroke-dasharray="4 4"' : ""}/><text x="${pl - 6}" y="${Y(e) + 4}" fill="#6b768b" font-size="10.5" text-anchor="end">${fmt(e, pas < 1 ? 1 : 0)}°</text>`;
+  const dias = S.janelaDias, pd = dias > 30 ? 7 : dias > 10 ? 2 : 1;
+  for (let d = 0; d <= dias; d += pd) { const x = X(d * 24 / S.passoH); grade += `<text x="${x}" y="${Ht - 6}" fill="#6b768b" font-size="10.5" text-anchor="middle">${d ? "+" + d + "d" : T("pouso", "landing")}</text>`; }
+  const xc = X(ic - i0);
+  svg.setAttribute("viewBox", `0 0 ${W} ${Ht}`);
+  svg.innerHTML = `${luz}${grade}<path d="${mont}" fill="#4d4a44" opacity=".75"/><path d="${lin}" fill="none" stroke="#ffd24a" stroke-width="2"/>
+    <line x1="${xc}" x2="${xc}" y1="${pt}" y2="${Ht - pb}" stroke="#fff" stroke-width="1.5"/><circle cx="${xc}" cy="${Y(s.sol_el[ic])}" r="4.5" fill="#fff3c4" stroke="#ffd24a"/>`;
+  const m = metricas(l, i0, i1);
+  $("solTitulo").textContent = T(`Altura do Sol no céu: ${nomeLocal(l)}`, `Height of the Sun in the sky: ${nomeLocal(l)}`);
+  $("solread").innerHTML = `<small>${T("Altura do Sol agora", "Sun height now")}</small><div class="gr">${fmt(s.sol_el[ic], 1)}°</div>
+    <small>${v.sol[ic] > 0 ? T("acima das montanhas: tem luz", "above the mountains: sunlight") : (s.sol_el[ic] > 0 ? T(`abaixo das montanhas (${fmt(v.hs[ic], 1)}° nessa direção)`, `below the mountains (${fmt(v.hs[ic], 1)}° in that direction)`) : T("abaixo do horizonte: noite", "below the horizon: night"))}</small>
+    <small style="margin-top:6px">${T("Máxima no período", "Maximum in the period")}</small><div class="disp" style="font-size:20px;font-weight:600">${fmt(m.solElMax, 1)}°</div>
+    <small>${T("Para comparar: em São Paulo, ao meio-dia, o Sol chega a quase 90°.", "For comparison: near the tropics on Earth, the midday Sun can reach almost 90°.")}</small>`;
+}
+
+/* =========================================================================
+   Validação
+   ========================================================================= */
+const VALID_EN = {
+  "Sol no polo": ["Sun at the pole", "At the south pole the Sun never rises above ~1.54° (lunar axial tilt)."],
+  "Balanço da Terra": ["Earth's wobble", "Seen from the pole, Earth swings up to ~6.7° because of libration."],
+  "Lado oculto": ["Far side", "From the Chang'e 4 site, on the far side, Earth never appears."],
+  "Terra fixa no céu": ["Earth fixed in the sky", "From the Apollo 11 site, near the center of the near side, Earth is always in the sky."],
+  "Dia e noite no equador": ["Day and night at the equator", "Near the lunar equator, the Sun is above the horizon about half the time."],
+};
+const detalheEN = d => String(d || "").replace("máximo encontrado", "max found").replace("mínimo encontrado", "min found").replace("encontrado:", "found:").replace("do tempo", "of the time").replace(/local '(.+)' não incluído/, "site '$1' not included");
+function renderValid() {
+  const val = S.D.meta.validacao;
+  const manuais = [
+    [T("Comparar com o mapa de iluminação da NASA", "Compare with NASA's illumination map"), T("Conferir se a % de tempo com sol de cada local bate com o mapa de iluminação média do polo sul no Quickmap.", "Check that each site's % of time with sunlight matches the south pole average-illumination map in Quickmap.")],
+    [T("Conferir a altitude dos locais", "Check site elevations"), T("Comparar a altitude que o script calcula para cada local com a do Quickmap ou do Moon Trek.", "Compare the elevation the script computes for each site with Quickmap or Moon Trek.")],
+  ];
+  const selo = st => st === "ok" ? T("✓ passou", "✓ passed") : st === "falhou" ? T("✕ falhou", "✕ failed") : T("pendente", "pending");
+  const linha = (st, t, d, det) => `<div class="vtl"><span class="bd ${st}">${selo(st)}</span><div><b>${esc(t)}</b><small>${esc(d)}</small></div><small>${esc(det || "")}</small></div>`;
+  const tr = (t, d) => LANG === "en" && VALID_EN[t] ? VALID_EN[t] : [t, d];
+  let h;
+  if (val && val.length) h = val.map(t => { const [nt, nd] = tr(t.teste, t.descricao); return linha(t.status === "ok" ? "ok" : t.status === "falhou" ? "falhou" : "pend", nt, nd, LANG === "en" ? detalheEN(t.detalhe) : t.detalhe); }).join("");
+  else h = [["Sol no polo", "No polo sul o Sol nunca sobe mais que ~1,54°."], ["Balanço da Terra", "Vista do polo, a Terra oscila até ~6,7°."], ["Lado oculto", "Da Chang'e 4, a Terra nunca aparece."], ["Terra fixa no céu", "Da Apollo 11, a Terra está sempre no céu."], ["Dia e noite no equador", "Perto do equador, Sol acima do horizonte ~50% do tempo."]]
+    .map(([t, d]) => { const [nt, nd] = tr(t, d); return linha("pend", nt, nd, T("rode os scripts com dados reais", "run the scripts with real data")); }).join("");
+  $("valid").innerHTML = h;
+}
+
+/* =========================================================================
+   Explicações (modo Explorar)
+   ========================================================================= */
+function renderExplica() {
+  const c = S.cenarios[S.ativo]; if (!c) return;
+  const l = local(c.local), { i0, i1 } = janelaCenario(c);
+  const salvo = S.relevo;
+  S.relevo = true; const mR = metricas(l, i0, i1);
+  S.relevo = false; const mP = metricas(l, i0, i1);
+  S.relevo = salvo;
+  const temRelevo = !!(l.horizonte && l.horizonte.el);
+  const barra = (lbl, v, max, cor) => `<div style="display:grid;grid-template-columns:120px 1fr 46px;gap:8px;align-items:center;font-size:12px;margin:4px 0"><span class="hint">${lbl}</span><div style="background:#0a101b;border-radius:4px;height:10px"><div style="width:${clamp(v / max * 100, 0.8, 100)}%;height:10px;border-radius:4px;background:${cor}"></div></div><span>${fmt(v, v < 10 ? 1 : 0)}°</span></div>`;
+  const nm = esc(nomeLocal(l));
+  $("explica").innerHTML = LANG === "en" ? `
+    <article><h3>The Sun stays low on the ground</h3>
+      <p>The Moon's axis is almost upright: a tilt of only 1.5°. At the south pole the Sun never rises higher than that. It circles the entire horizon, skimming the ground, over about 29.5 days.</p>
+      ${barra("Tropics on Earth", 89, 90, "#f6c445")}${barra("Lunar equator", 90, 90, "#f6c445")}${barra("Lunar south pole", 1.54, 90, "#f6c445")}
+      <p class="hint">Highest midday Sun.</p></article>
+    <article><h3>Small changes, big effects</h3>
+      ${temRelevo ? `<p>At <b>${nm}</b>, on this date:</p>
+      <p><span class="big">${fmt(mP.pctSol)}%</span> <span class="hint">of the time with sunlight on a smooth Moon</span><br>
+         <span class="big" style="color:var(--sun)">${fmt(mR.pctSol)}%</span> <span class="hint">with the real terrain</span></p>
+      <p>With the Sun so low, a hill kilometers away casts a shadow. Moving the landing a few hundred meters, or the date a few days, can turn a sunlit site into a dark one.</p>
+      <button class="btn small" id="verSemRelevo">${S.relevo ? "See it without terrain" : "Use the terrain again"}</button>`
+      : `<p>This site has no terrain profile loaded. Pick a south pole site to see the effect of the terrain.</p>`}</article>
+    <article><h3>Why does Earth disappear?</h3>
+      <p>From the near side, Earth hangs almost still in the sky. But the Moon "wobbles" a little (libration), so Earth swings about 7° up and down.</p>
+      <p>At the pole Earth sits close to the horizon, so it is hidden part of the time. Here, in this window, it ranges from <b>${fmt(mR.terraMin, 1)}°</b> to <b>${fmt(mR.terraMax, 1)}°</b>. On the far side it never appears, and a relay satellite is needed.</p></article>
+    <article><h3>No atmosphere, no twilight</h3>
+      <p>On Earth the air bends light and the sky brightens before sunrise. The Moon has no air: the sky is black even by day, and the horizon is just terrain and the curve of the sphere.</p>
+      <p>Light switches abruptly to darkness. Shadows are total, and the cold inside them drops below −170 °C.</p></article>
+    <article style="grid-column:1/-1"><h3>Short glossary</h3><dl class="gl">
+      <dt>Horizon</dt><dd>The line where the ground meets the sky. If the Sun or Earth is below it, you cannot see them.</dd>
+      <dt>Degree (°)</dt><dd>Measures how high something is in the sky. 0° is the horizon line and 90° is straight overhead. With your arm stretched out, your little finger covers about 1°. The Sun is half a degree wide.</dd>
+      <dt>Terrain</dt><dd>Mountains, craters and valleys. Here it comes from LOLA, a laser on NASA's LRO probe that measured the height of the entire lunar surface.</dd>
+      <dt>Lunar day</dt><dd>On the Moon, a full day (from one sunrise to the next) lasts about 29.5 Earth days. Away from the pole that is roughly 15 days of light and 15 of darkness.</dd>
+      <dt>Lunar south pole</dt><dd>A region with frozen water at the bottom of craters that never see sunlight. That is why so many missions, like Artemis, want to go there.</dd>
+      <dt>Libration</dt><dd>A slight "wobble" of the Moon as seen from Earth. Because of it, Earth moves a little up and down in the lunar sky.</dd>
+      <dt>Far side</dt><dd>The half of the Moon that always faces away from Earth. Earth is never visible from there, so there is no direct contact.</dd>
+    </dl></article>` : `
+    <article><h3>O Sol fica rente ao chão</h3>
+      <p>O eixo da Lua é quase reto: inclinação de só 1,5°. No polo sul o Sol nunca sobe mais que isso. Ele circula o horizonte inteiro, rente ao chão, ao longo de cerca de 29,5 dias.</p>
+      ${barra("São Paulo (verão)", 89, 90, "#f6c445")}${barra("Equador lunar", 90, 90, "#f6c445")}${barra("Polo sul lunar", 1.54, 90, "#f6c445")}
+      <p class="hint">Altura máxima do Sol ao meio-dia.</p></article>
+    <article><h3>Pequenas mudanças, grandes efeitos</h3>
+      ${temRelevo ? `<p>Em <b>${nm}</b>, nesta data:</p>
+      <p><span class="big">${fmt(mP.pctSol)}%</span> <span class="hint">de tempo com Sol numa Lua lisa</span><br>
+         <span class="big" style="color:var(--sun)">${fmt(mR.pctSol)}%</span> <span class="hint">com o relevo real</span></p>
+      <p>Com o Sol tão baixo, um morro a quilômetros de distância faz sombra. Mover o pouso algumas centenas de metros, ou mudar a data em poucos dias, pode trocar um local iluminado por um escuro.</p>
+      <button class="btn small" id="verSemRelevo">${S.relevo ? "Ver sem relevo no panorama" : "Voltar a usar o relevo"}</button>`
+      : `<p>Este local não tem perfil de relevo carregado. Escolha um local do polo sul para ver o efeito do terreno.</p>`}</article>
+    <article><h3>Por que a Terra some?</h3>
+      <p>Da face visível, a Terra fica quase parada no céu. Mas a Lua "balança" um pouco (libração), e a Terra oscila cerca de 7° para cima e para baixo.</p>
+      <p>No polo ela fica perto do horizonte, então passa parte do tempo escondida. Aqui, nesta janela, ela varia entre <b>${fmt(mR.terraMin, 1)}°</b> e <b>${fmt(mR.terraMax, 1)}°</b>. No lado oculto ela nunca aparece, e é preciso um satélite retransmissor.</p></article>
+    <article><h3>Sem atmosfera, sem crepúsculo</h3>
+      <p>Na Terra o ar curva a luz e o céu clareia antes do Sol nascer. Na Lua não existe ar: o céu é preto mesmo de dia, e o horizonte é só o relevo e a curvatura da esfera.</p>
+      <p>A troca entre luz e escuridão é brusca. As sombras são totais, e o frio nelas passa de −170 °C.</p></article>
+    <article style="grid-column:1/-1"><h3>Pequeno glossário</h3><dl class="gl">
+      <dt>Horizonte</dt><dd>A linha onde o chão encontra o céu. Se o Sol ou a Terra estão abaixo dela, não dá para vê-los.</dd>
+      <dt>Grau (°)</dt><dd>Mede a altura de algo no céu. 0° é a linha do horizonte e 90° é bem em cima da cabeça. Com o braço esticado, seu dedo mindinho cobre mais ou menos 1°. O Sol tem meio grau de largura.</dd>
+      <dt>Relevo</dt><dd>As montanhas, crateras e vales. Aqui ele vem do LOLA, um laser da sonda LRO da NASA que mediu a altura do chão da Lua inteira.</dd>
+      <dt>Dia lunar</dt><dd>Na Lua, um dia completo (de um nascer do sol ao outro) dura cerca de 29,5 dias da Terra. Longe do polo são cerca de 15 dias de luz e 15 de escuridão.</dd>
+      <dt>Polo sul lunar</dt><dd>Região onde há água congelada no fundo de crateras que nunca recebem sol. Por isso tantas missões, como o Artemis, querem ir para lá.</dd>
+      <dt>Libração</dt><dd>Um leve "balanço" da Lua, visto daqui. Por causa dele, a Terra sobe e desce um pouco no céu lunar.</dd>
+      <dt>Lado oculto</dt><dd>A metade da Lua que fica sempre de costas para a Terra. De lá nunca se vê a Terra, então não há contato direto.</dd>
+    </dl></article>`;
+  const b = $("verSemRelevo"); if (b) b.onclick = () => { S.relevo = !S.relevo; $("relevo").checked = S.relevo; S.cacheVis.clear(); renderTudo(); };
+}
+
+/* =========================================================================
+   Exportação, fonte, controles
+   ========================================================================= */
+function csvComparacao() {
+  const linhas = [["local", "lat", "lon_leste", "data_pouso_utc", "periodo_dias", "status", "pct_sol", "pct_terra", "pct_sol_e_terra", "maior_noite_h", "maior_sem_terra_h", "irradiancia_media_wm2", "relevo", "regra_terra"]];
+  for (const c of S.cenarios) {
+    const l = local(c.local), { i0, i1 } = janelaCenario(c), m = metricas(l, i0, i1), a = avaliar(m);
+    linhas.push([nomeLocal(l), l.lat, l.lon_leste, new Date(dataCenario(c)).toISOString(), S.janelaDias, a.rotulo, m.pctSol.toFixed(1), m.pctTer.toFixed(1), m.pctAmb.toFixed(1), m.noiteMaxH, m.semTerraMaxH, m.irr.toFixed(0), S.relevo && l.horizonte ? "LOLA" : "plano", S.regraTerra]);
+  }
+  return linhas.map(r => r.map(x => /[",;]/.test(String(x)) ? `"${String(x).replace(/"/g, '""')}"` : x).join(",")).join("\n");
+}
+$("exportar").onclick = async () => {
+  const txt = csvComparacao(), out = $("csvOut");
+  try { await navigator.clipboard.writeText(txt); $("exportMsg").textContent = T("Copiado. Cole numa planilha.", "Copied. Paste it into a spreadsheet."); out.style.display = "none"; }
+  catch { out.value = txt; out.style.display = "block"; out.select(); $("exportMsg").textContent = T("Copie o texto abaixo (Ctrl+C).", "Copy the text below (Ctrl+C)."); }
+};
+function atualizarFonte() {
+  const demo = S.D.meta.demo, b = $("fonteBadge");
+  b.querySelector(".dot").style.background = demo ? "var(--warn)" : "var(--ok)";
+  b.querySelector("span:last-child").textContent = demo ? T("Dados de demonstração", "Demo data") : T("Dados: JPL Horizons + LOLA", "Data: JPL Horizons + LOLA");
+  const av = $("avisoDemo");
+  av.style.display = demo ? "block" : "none";
+  av.innerHTML = demo ? T("<b>Modo demonstração.</b> As posições do Sol e da Terra vêm de um modelo simplificado e o relevo é sintético. Os números servem para testar a interface, não para planejar. Rode os scripts da equipe e use <b>Carregar dados reais</b> com o arquivo <code>dados/app_dados.json</code>.", "<b>Demo mode.</b> Sun and Earth positions come from a simplified model and the terrain is synthetic. The numbers are for testing the interface, not for planning. Run the team's scripts and use <b>Load real data</b> with the file <code>dados/app_dados.json</code>.") : "";
+  $("rodape").textContent = demo ? T("Interface em modo demonstração.", "Interface in demo mode.") :
+    T(`Dados gerados em ${S.D.meta.gerado_em_utc || "?"} · intervalo de ${S.passoH} h · ${dataUTC(S.t0, false)} a ${dataUTC(msDe(S.n - 1), false)}. Elevações sem refração (a Lua não tem atmosfera); libração incluída pelo Horizons.`, `Data generated on ${S.D.meta.gerado_em_utc || "?"} · ${S.passoH} h step · ${dataUTC(S.t0, false)} to ${dataUTC(msDe(S.n - 1), false)}. Elevations without refraction (the Moon has no atmosphere); libration included by Horizons.`);
+}
+function renderTempo() { renderCards(); renderPano(); renderTL(); renderSol(); }
+function renderTudo() { renderCards(); renderMapa(); renderPano(); renderTL(); renderSol(); renderHeat(); renderValid(); if (document.body.classList.contains("exp")) renderExplica(); }
+
+$("mExp").onclick = () => { document.body.className = "exp"; $("mExp").classList.add("on"); $("mPlan").classList.remove("on"); renderTudo(); };
+$("mPlan").onclick = () => { document.body.className = "plan"; $("mPlan").classList.add("on"); $("mExp").classList.remove("on"); renderTudo(); };
+$("relevo").onchange = e => { S.relevo = e.target.checked; renderTudo(); };
+$("cursor").oninput = e => { S.offsetH = +e.target.value; renderTempo(); };
+const ligar = (id, campo, conv = Number) => $(id).onchange = e => { S[campo] = conv(e.target.value); S.cacheVis.clear(); S.offsetH = Math.min(S.offsetH, janelaN() * S.passoH); renderTudo(); };
+ligar("janela", "janelaDias"); ligar("minSol", "minSol"); ligar("minTerra", "minTerra"); ligar("maxNoite", "maxNoite");
+ligar("regraTerra", "regraTerra", String); ligar("margem", "margem");
+
+let ultimoQuadro = 0;
+const textoPlay = () => S.tocando ? T("❚❚ Pausar", "❚❚ Pause") : T("▶ Animar", "▶ Animate");
+function tocar(ts) {
+  if (!S.tocando) return;
+  if (ts - ultimoQuadro > 40) {
+    ultimoQuadro = ts;
+    const max = janelaN() * S.passoH, passo = Math.max(S.passoH, Math.round(max / 240 / S.passoH) * S.passoH);
+    S.offsetH += passo; if (S.offsetH > max) S.offsetH = 0;
+    renderTempo();
+  }
+  requestAnimationFrame(tocar);
+}
+$("play").onclick = () => { S.tocando = !S.tocando; $("play").textContent = textoPlay(); if (S.tocando) requestAnimationFrame(tocar); };
+
+$("arquivo").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const D = JSON.parse(await f.text());
+    if (!D.meta || !D.locais || !D.series) throw new Error(T("formato inesperado", "unexpected format"));
+    carregarDados(D);
+  } catch (err) {
+    const av = $("avisoDemo"); av.style.display = "block"; av.textContent = T("Não consegui ler esse arquivo: ", "Could not read this file: ") + err.message + T(". Use o dados/app_dados.json gerado pelo exportar_app.py.", ". Use the dados/app_dados.json produced by exportar_app.py.");
+  }
+};
+let redim; window.addEventListener("resize", () => { clearTimeout(redim); redim = setTimeout(renderTudo, 150); });
+
+/* =========================================================================
+   Tela de entrada: Lua 3D desenhada em canvas (sem bibliotecas)
+   ========================================================================= */
+const CAT_COR = { "Apollo": "#ff8a4c", "Comercial / CLPS": "#5ad1ff", "comercial/CLPS": "#5ad1ff", "Outros países": "#c49bff", "outros países": "#c49bff", "Artemis (regiões candidatas)": "#ff5fa2", "Referência": "#e8edf5", "referencia": "#e8edf5", "Polo sul": "#e8edf5", "polo sul": "#e8edf5" };
+const corCat = l => CAT_COR[l.categoria] || "#e8edf5";
+const INFO = {
+  polo_sul: ["Referência", "O ponto mais ao sul da Lua. Ali o Sol nunca sobe mais que cerca de 1,5° e passa o mês inteiro dando a volta no horizonte."],
+  shackleton: ["Referência", "Cratera de cerca de 21 km quase em cima do polo sul. O fundo nunca recebe luz do sol e pode guardar gelo de água. A borda, ao contrário, é um dos lugares mais iluminados da Lua."],
+  im2_athena: ["2025", "Lander da empresa Intuitive Machines que pousou perto de Mons Mouton, no polo sul, e terminou tombado de lado."],
+  im1_odysseus: ["2024", "Primeiro pouso de uma empresa privada na Lua (Intuitive Machines, pelo programa CLPS da NASA). Tombou de lado, mas ainda enviou dados por alguns dias."],
+  chandrayaan3: ["2023", "Missão da Índia que levou o lander Vikram e o rover Pragyan mais perto do polo sul do que qualquer pouso anterior."],
+  change4: ["2019", "Missão chinesa e primeiro pouso suave no lado oculto da Lua. Como de lá a Terra nunca aparece, depende de um satélite retransmissor para se comunicar."],
+  blue_ghost1: ["2025", "Lander da empresa Firefly Aerospace, pelo programa CLPS da NASA, que pousou de pé em Mare Crisium e operou durante um dia lunar."],
+  apollo11: ["1969", "Primeiros humanos na Lua: Neil Armstrong e Buzz Aldrin pousaram numa planície do Mar da Tranquilidade."],
+  apollo15: ["1971", "Primeira missão Apollo com o jipe lunar, ao pé dos montes Apeninos."],
+  apollo17: ["1972", "A última vez que humanos pisaram na Lua, no vale Taurus-Littrow."],
+};
+const INFO_EN = {
+  polo_sul: "The southernmost point of the Moon. The Sun never rises more than about 1.5° there, and spends the whole month circling the horizon.",
+  shackleton: "A crater about 21 km wide almost on top of the south pole. Its floor never gets sunlight and may hold water ice. Its rim, by contrast, is one of the best-lit places on the Moon.",
+  im2_athena: "Intuitive Machines lander that touched down near Mons Mouton, at the south pole, and ended up on its side.",
+  im1_odysseus: "First landing on the Moon by a private company (Intuitive Machines, under NASA's CLPS program). It tipped over but still sent data for a few days.",
+  chandrayaan3: "India's mission that brought the Vikram lander and the Pragyan rover closer to the south pole than any earlier landing.",
+  change4: "Chinese mission and the first soft landing on the far side of the Moon. Since Earth is never visible from there, it relies on a relay satellite to communicate.",
+  blue_ghost1: "Firefly Aerospace lander, under NASA's CLPS program, that landed upright in Mare Crisium and operated for one lunar day.",
+  apollo11: "First humans on the Moon: Neil Armstrong and Buzz Aldrin landed on a plain in the Sea of Tranquility.",
+  apollo15: "First Apollo mission with the lunar rover, at the foot of the Apennine mountains.",
+  apollo17: "The last time humans walked on the Moon, in the Taurus-Littrow valley.",
+};
+const infoLocal = l => {
+  if (INFO[l.id]) { const [q, t] = INFO[l.id]; return [q === "Referência" ? T("Referência", "Reference") : q, LANG === "en" ? INFO_EN[l.id] : t]; }
+  if (l.id.startsWith("art_")) return ["Artemis", T("Uma das 9 regiões que a NASA estuda para o primeiro pouso tripulado do programa Artemis no polo sul. A NASA não publicou pontos exatos: esta coordenada é uma referência aproximada.", "One of the 9 regions NASA is studying for the first crewed landing of the Artemis program at the south pole. NASA has not published exact points: this coordinate is an approximate reference.")];
+  return [catLocal(l), T("Local adicionado pela equipe.", "Site added by the team.")];
+};
+
+const G = { ry: -Math.PI / 2 - 25 * RAD, rx: 0.25, z: 1, alvo: { ry: 0, rx: 0, z: 1 }, sel: null, hover: null, ocioso: 0, raf: 0, tex: null, cache: null, sujo: true, ultimo: { ry: 1e9, rx: 1e9, r: 0 } };
+G.alvo.ry = G.ry; G.alvo.rx = G.rx;
+const MOVE_REDUZIDO = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function texturaLua() {
+  const W = 2048, Hh = 1024, cv = document.createElement("canvas"); cv.width = W; cv.height = Hh;
+  const g = cv.getContext("2d"), r = rng(11);
+  g.fillStyle = "#9b9a96"; g.fillRect(0, 0, W, Hh);
+  const X = lon => (lon + 180) / 360 * W, Y = lat => (90 - lat) / 180 * Hh, PX = d => d / 360 * W;
+  for (let i = 0; i < 14000; i++) { const v = 120 + r() * 70 | 0; g.fillStyle = `rgba(${v},${v},${v},.16)`; g.fillRect(r() * W, r() * Hh, 1 + r() * 3, 1 + r() * 3); }
+  // mares (regiões escuras de lava antiga), posições aproximadas
+  const mares = [[-16, 33, 18], [18, 28, 10], [31, 9, 12], [59, 17, 7], [51, -8, 9], [34, -15, 5], [-17, -21, 9], [-39, -24, 6], [-57, 18, 22], [-5, 56, 9], [20, 56, 8], [4, 13, 4], [147, 27, 4], [-95, -20, 5], [-170, -53, 24]];
+  mares.forEach(([lo, la, rd], k) => {
+    const forca = k === mares.length - 1 ? .16 : .5;
+    for (let j = 0; j < 9; j++) {
+      const x = X(lo + (r() - .5) * rd), y = Y(la + (r() - .5) * rd * .7), rr = PX(rd) * (.45 + r() * .5), sx = 1 / Math.max(Math.cos(la * RAD), .3);
+      g.save(); g.translate(x, y); g.scale(sx, 1);
+      const gr = g.createRadialGradient(0, 0, 0, 0, 0, rr); gr.addColorStop(0, `rgba(48,49,54,${forca})`); gr.addColorStop(1, "rgba(48,49,54,0)");
+      g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rr, 0, 7); g.fill(); g.restore();
+    }
+  });
+  // crateras, com mais densidade perto do polo sul
+  const cratera = (lat, lon, rad) => {
+    const sx = 1 / Math.max(Math.cos(lat * RAD), .12), y = Y(lat);
+    for (const o of [-W, 0, W]) {
+      const x = X(lon) + o; if (x < -rad * sx * 2 || x > W + rad * sx * 2) continue;
+      g.save(); g.translate(x, y); g.scale(sx, 1);
+      const gr = g.createRadialGradient(-rad * .25, -rad * .25, 0, 0, 0, rad);
+      gr.addColorStop(0, "rgba(45,45,47,.38)"); gr.addColorStop(.75, "rgba(75,75,77,.22)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rad, 0, 7); g.fill();
+      g.strokeStyle = "rgba(220,219,212,.26)"; g.lineWidth = Math.max(1, rad * .1); g.beginPath(); g.arc(rad * .06, rad * .06, rad * .93, Math.PI * .9, Math.PI * 1.9); g.stroke();
+      g.restore();
+    }
+  };
+  for (let i = 0; i < 2600; i++) cratera(Math.asin(r() * 2 - 1) * DEG, r() * 360 - 180, Math.pow(r(), 3.6) * PX(3.6) + 1.2);
+  for (let i = 0; i < 900; i++) cratera(-90 + Math.pow(r(), 1.6) * 22, r() * 360 - 180, Math.pow(r(), 2.4) * PX(2.2) + 1.2);
+  for (let i = 0; i < 40; i++) { const la = Math.asin(r() * 2 - 1) * DEG, lo = r() * 360 - 180, rr = PX(1.5 + r() * 2); const x = X(lo), y = Y(la);
+    const gr = g.createRadialGradient(x, y, rr, x, y, rr * 7); gr.addColorStop(0, "rgba(235,235,230,.22)"); gr.addColorStop(1, "rgba(235,235,230,0)"); g.fillStyle = gr; g.beginPath(); g.arc(x, y, rr * 7, 0, 7); g.fill(); }
+  const d = g.getImageData(0, 0, W, Hh).data, lum = new Uint8Array(W * Hh);
+  for (let i = 0; i < W * Hh; i++) lum[i] = d[i * 4];
+  return { W, H: Hh, lum };
+}
+
+function matriz(rx, ry) {
+  const c = Math.cos(rx), s = Math.sin(rx), cb = Math.cos(ry), sb = Math.sin(ry);
+  return [cb, 0, sb, s * sb, c, -s * cb, -c * sb, s, c * cb];
+}
+function prepararCache(r) {
+  const n = 2 * r, idx = [], vx = [], vy = [], vz = [], luz = [];
+  const L = [-0.55, 0.42, 0.72], nl = Math.hypot(...L);
+  for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
+    const x = (i - r + .5) / r, y = -(j - r + .5) / r, q = x * x + y * y; if (q > 1) continue;
+    const z = Math.sqrt(1 - q);
+    idx.push(j * n + i); vx.push(x); vy.push(y); vz.push(z);
+    const lam = Math.max(0, (x * L[0] + y * L[1] + z * L[2]) / nl);
+    luz.push(0.05 + 0.95 * Math.pow(lam, 0.85) * (0.78 + 0.22 * z));
+  }
+  const cv = document.createElement("canvas"); cv.width = cv.height = n;
+  const ctx = cv.getContext("2d"), img = ctx.createImageData(n, n);
+  return { r, n, idx: Int32Array.from(idx), vx: Float32Array.from(vx), vy: Float32Array.from(vy), vz: Float32Array.from(vz), luz: Float32Array.from(luz), cv, ctx, img };
+}
+function renderizarEsfera() {
+  const C = G.cache, T = G.tex, m = matriz(G.rx, G.ry), d = C.img.data;
+  const W = T.W, Hh = T.H, lum = T.lum;
+  for (let k = 0; k < C.idx.length; k++) {
+    const x = C.vx[k], y = C.vy[k], z = C.vz[k];
+    const mx = m[0] * x + m[3] * y + m[6] * z, my = m[1] * x + m[4] * y + m[7] * z, mz = m[2] * x + m[5] * y + m[8] * z;
+    const lat = Math.asin(my < -1 ? -1 : my > 1 ? 1 : my), lon = Math.atan2(-mz, mx);
+    const u = ((lon / (2 * Math.PI) + .5) * W) | 0, v = ((.5 - lat / Math.PI) * Hh) | 0;
+    const val = lum[(v < Hh ? v : Hh - 1) * W + (u < W ? u : W - 1)] * C.luz[k];
+    const o = C.idx[k] * 4;
+    d[o] = val * 1.02; d[o + 1] = val * .99; d[o + 2] = val * .93; d[o + 3] = 255;
+  }
+  C.ctx.putImageData(C.img, 0, 0);
+}
+function geometriaTela(cv) {
+  const W = cv.width, Hh = cv.height, larga = cv.clientWidth > 900;
+  const cx = larga ? W * .64 : W / 2, cy = larga ? Hh * .47 : Hh * .6;
+  const R = Math.min(W * (larga ? .30 : .42), Hh * .36) * G.z;
+  return { W, H: Hh, cx, cy, R };
+}
+function pinsTela(geo) {
+  const m = matriz(G.rx, G.ry), out = [];
+  for (const l of S.D.locais) {
+    const la = l.lat * RAD, lo = l.lon_leste * RAD;
+    const vx = Math.cos(la) * Math.cos(lo), vy = Math.sin(la), vz = -Math.cos(la) * Math.sin(lo);
+    const x = m[0] * vx + m[1] * vy + m[2] * vz, y = m[3] * vx + m[4] * vy + m[5] * vz, z = m[6] * vx + m[7] * vy + m[8] * vz;
+    out.push({ l, x: geo.cx + x * geo.R, y: geo.cy - y * geo.R, z });
+  }
+  return out;
+}
+let estrelas = null;
+function desenharGlobo(t) {
+  const cv = $("globo"), dpr = Math.min(devicePixelRatio || 1, 1.5);
+  const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; estrelas = null; }
+  const g = cv.getContext("2d"), geo = geometriaTela(cv);
+  if (!estrelas) { const r = rng(5); estrelas = Array.from({ length: Math.round(w * h / 2600) }, () => [r() * w, r() * h, .3 + r() * 1.1, .25 + r() * .7]); }
+  g.fillStyle = "#02040a"; g.fillRect(0, 0, w, h);
+  for (const [x, y, rr, a] of estrelas) { g.globalAlpha = a; g.fillStyle = "#fff"; g.beginPath(); g.arc(x, y, rr * dpr, 0, 7); g.fill(); }
+  g.globalAlpha = 1;
+  // brilho do Sol, do mesmo lado de onde vem a luz da esfera
+  const sx = geo.cx - geo.R * 2.3, sy = geo.cy - geo.R * 1.7;
+  const gs = g.createRadialGradient(sx, sy, 0, sx, sy, geo.R * 1.6); gs.addColorStop(0, "rgba(255,240,200,.55)"); gs.addColorStop(.12, "rgba(255,200,110,.22)"); gs.addColorStop(1, "rgba(255,170,60,0)");
+  g.fillStyle = gs; g.fillRect(0, 0, w, h);
+  // esfera (re-renderiza só quando a rotação muda)
+  const rRender = Math.min(G.z > 1.3 ? 420 : 340, Math.round(geo.R));
+  if (!G.cache || G.cache.r !== rRender) { G.cache = prepararCache(rRender); G.sujo = true; }
+  if (G.sujo || Math.abs(G.ultimo.ry - G.ry) > 1e-4 || Math.abs(G.ultimo.rx - G.rx) > 1e-4) { renderizarEsfera(); G.ultimo = { ry: G.ry, rx: G.rx }; G.sujo = false; }
+  const halo = g.createRadialGradient(geo.cx, geo.cy, geo.R * .98, geo.cx, geo.cy, geo.R * 1.12); halo.addColorStop(0, "rgba(160,190,255,.16)"); halo.addColorStop(1, "rgba(160,190,255,0)");
+  g.fillStyle = halo; g.beginPath(); g.arc(geo.cx, geo.cy, geo.R * 1.12, 0, 7); g.fill();
+  g.imageSmoothingEnabled = true; g.drawImage(G.cache.cv, geo.cx - geo.R, geo.cy - geo.R, geo.R * 2, geo.R * 2);
+  // pins
+  const pins = pinsTela(geo); G.pins = pins;
+  const c0 = S.cenarios[S.ativo] || S.cenarios[0];
+  for (const p of pins.filter(q => q.z > 0.02).sort((a, b) => a.z - b.z)) {
+    const cor = corCat(p.l), sel = G.sel === p.l.id, hov = G.hover === p.l.id, rr = (sel ? 7.5 : 5.5) * dpr;
+    const fase = ((t * .0006 + (hash(p.l.id) % 100) / 100) % 1);
+    g.globalAlpha = (1 - fase) * .8 * Math.min(1, p.z * 3); g.strokeStyle = cor; g.lineWidth = 1.5 * dpr;
+    g.beginPath(); g.arc(p.x, p.y, rr + fase * 14 * dpr, 0, 7); g.stroke();
+    g.globalAlpha = Math.min(1, .35 + p.z * 2); g.fillStyle = cor; g.beginPath(); g.arc(p.x, p.y, rr, 0, 7); g.fill();
+    g.lineWidth = 2 * dpr; g.strokeStyle = "#02040a"; g.stroke();
+    if (c0 && c0.local === p.l.id) { g.strokeStyle = "#fff"; g.lineWidth = 1.6 * dpr; g.beginPath(); g.arc(p.x, p.y, rr + 4 * dpr, 0, 7); g.stroke(); }
+    if (sel || hov) {
+      g.globalAlpha = 1; g.font = `600 ${13 * dpr}px "Chakra Petch", sans-serif`; g.lineWidth = 4 * dpr; g.strokeStyle = "#02040a"; g.fillStyle = "#fff";
+      const txt = nomeCurto(p.l); g.strokeText(txt, p.x + 12 * dpr, p.y - 10 * dpr); g.fillText(txt, p.x + 12 * dpr, p.y - 10 * dpr);
+    }
+    g.globalAlpha = 1;
+  }
+}
+function pinEm(ev) {
+  const cv = $("globo"), b = cv.getBoundingClientRect(), dpr = cv.width / b.width;
+  const x = (ev.clientX - b.left) * dpr, y = (ev.clientY - b.top) * dpr;
+  let best = null, bd = 16 * dpr;
+  for (const p of G.pins || []) { if (p.z <= 0.02) continue; const d = Math.hypot(p.x - x, p.y - y); if (d < bd) { bd = d; best = p; } }
+  return best;
+}
+function voarPara(l, zoom = 1.7) {
+  G.alvo.ry = -Math.PI / 2 - l.lon_leste * RAD; G.alvo.rx = clamp(l.lat * RAD, -1.5, 1.5); G.alvo.z = zoom;
+  const d = ((G.alvo.ry - G.ry + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI; G.alvo.ry = G.ry + d;
+  G.ocioso = performance.now() + 60000;
+}
+function laco(t) {
+  if (!document.body.classList.contains("intro")) { G.raf = 0; return; }
+  const k = MOVE_REDUZIDO ? 1 : .08;
+  if (!G.arrastando) { G.ry += (G.alvo.ry - G.ry) * k; G.rx += (G.alvo.rx - G.rx) * k; }
+  G.z += (G.alvo.z - G.z) * k;
+  if (!MOVE_REDUZIDO && !G.arrastando && !G.sel && performance.now() > G.ocioso) { G.alvo.ry += .0016; }
+  desenharGlobo(t);
+  G.raf = requestAnimationFrame(laco);
+}
+function abrirPainelLocal(l) {
+  G.sel = l.id; voarPara(l);
+  const [quando, txt] = infoLocal(l), cor = corCat(l);
+  const c = S.cenarios[S.ativo] || S.cenarios[0], ms = c ? dataCenario(c) : S.t0;
+  const i0 = idxDe(ms), m = metricas(l, i0, Math.min(S.n, i0 + janelaN())), a = avaliar(m);
+  const nomes = { ok: T("Bom local para pousar", "Good place to land"), warn: T("Atenção: tem um problema", "Caution: one problem"), bad: T("Não recomendado", "Not recommended") };
+  const pd = $("iniPainel"); pd.style.setProperty("--c", cor);
+  $("iniConteudo").innerHTML = `<span class="etq">${esc(catLocal(l))}${quando && !/^[A-Za-z]/.test(quando) ? " · " + quando : ""}</span>
+    <h2>${esc(nomeCurto(l))}</h2>
+    <div class="coord">${fmt(Math.abs(l.lat), 2)}°${l.lat < 0 ? "S" : "N"}, ${fmt(l.lon_leste > 180 ? 360 - l.lon_leste : l.lon_leste, 2)}°${l.lon_leste > 180 ? T("O", "W") : T("L", "E")}${(l.observacao && /aprox/i.test(l.observacao)) || l.id.startsWith("art_") ? T(" · coordenada aproximada", " · approximate coordinate") : ""}</div>
+    <p>${esc(txt)}</p>
+    <div class="ini-res"><div class="hint">${T(`Se pousar em ${dataUTC(ms, false)} (${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} dias analisados):`, `If landing on ${dataUTC(ms, false)} (${fmt(S.janelaDias, S.janelaDias % 1 ? 1 : 0)} days analyzed):`)}</div>
+      <div class="veredito ${a.nivel}" style="padding:7px 10px"><span class="vi">${{ ok: "✓", warn: "!", bad: "✕" }[a.nivel]}</span><div><b>${nomes[a.nivel]}</b>${a.falhas[0] ? `<small>${esc(a.falhas[0])}</small>` : ""}</div></div>
+      <div class="lin"><span><i class="pt sol"></i>${fmt(m.pctSol)}% ${T("do tempo com sol", "of the time with sunlight")}</span><span><i class="pt ter"></i>${fmt(m.pctTer)}% ${T("falando com a Terra", "with Earth in view")}</span></div></div>
+    <button class="btn primary grande" id="iniPlanejar">${T("Planejar com este local", "Plan with this site")}</button>
+    ${S.cenarios.length < 4 && !S.cenarios.some(q => q.local === l.id) ? `<button class="btn grande" id="iniComparar">${T("Comparar com o plano atual", "Compare with the current plan")}</button>` : ""}`;
+  pd.classList.add("on"); pd.scrollTop = 0;
+  $("iniPlanejar").onclick = () => { const alvo = S.cenarios[S.ativo] || S.cenarios[0]; alvo.local = l.id; fecharInicio(); };
+  const cmp = $("iniComparar");
+  if (cmp) cmp.onclick = () => { const ref = S.cenarios[S.ativo] || S.cenarios[0]; S.cenarios.push({ uid: uid++, local: l.id, base: ref ? ref.base : S.t0, slip: 0 }); S.ativo = S.cenarios.length - 1; fecharInicio(); };
+  [...$("iniNav").children].forEach(b => b.classList.toggle("on", b.dataset.id === l.id));
+  const bt = [...$("iniNav").children].find(b => b.dataset.id === l.id); if (bt) bt.scrollIntoView({ inline: "center", block: "nearest", behavior: MOVE_REDUZIDO ? "auto" : "smooth" });
+}
+function fecharPainelLocal() { $("iniPainel").classList.remove("on"); G.sel = null; G.alvo.z = 1; G.ocioso = performance.now() + 2500; [...$("iniNav").children].forEach(b => b.classList.remove("on")); }
+function montarInicio() {
+  const ordemCat = ["Apollo", "Outros países", "outros países", "Comercial / CLPS", "comercial/CLPS", "Artemis (regiões candidatas)"];
+  const ls = S.D.locais.filter(l => !l.custom).slice().sort((a, b) => {
+    const ca = ordemCat.indexOf(a.categoria), cb = ordemCat.indexOf(b.categoria);
+    if (ca !== cb) return (ca < 0 ? 99 : ca) - (cb < 0 ? 99 : cb);
+    return (infoLocal(a)[0] || "").localeCompare(infoLocal(b)[0] || "");
+  });
+  $("iniNav").innerHTML = ls.map(l => { const [q] = infoLocal(l); return `<button data-id="${esc(l.id)}" style="--c:${corCat(l)}"><b>${esc(nomeCurto(l))}</b><small>${/^\d/.test(q) ? q + " · " : ""}${esc(catLocal(l))}</small></button>`; }).join("");
+  $("iniNav").querySelectorAll("button").forEach(b => b.onclick = () => abrirPainelLocal(local(b.dataset.id)));
+  const cats = [...new Set(S.D.locais.map(l => l.categoria))].filter(Boolean);
+  const vistos = new Set();
+  $("iniLeg").innerHTML = cats.map(cn => { const nome = catLocal({ categoria: cn }); if (vistos.has(nome)) return ""; vistos.add(nome); return `<span><i style="background:${CAT_COR[cn] || "#e8edf5"}"></i>${esc(nome)}</span>`; }).join("");
+  const b = $("iniFonte"); b.querySelector(".dot").style.background = S.D.meta.demo ? "var(--warn)" : "var(--ok)";
+  b.querySelector("span:last-child").textContent = S.D.meta.demo ? T("Dados de demonstração", "Demo data") : T("Dados: JPL Horizons + LOLA", "Data: JPL Horizons + LOLA");
+}
+function abrirInicio() {
+  if (!G.tex) G.tex = texturaLua();
+  montarInicio();
+  document.body.classList.add("intro"); G.sujo = true;
+  if (!G.raf) G.raf = requestAnimationFrame(laco);
+}
+function fecharInicio() {
+  document.body.classList.remove("intro"); fecharPainelLocal();
+  renderTudo(); window.scrollTo({ top: 0 });
+  mostrarBoasVindas();
+}
+(function ligarGlobo() {
+  const cv = $("globo"), ptrs = new Map(); let mov = 0, pinca = 0;
+  cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, e); mov = 0; G.arrastando = true; cv.classList.add("arrasta"); $("iniDica").style.opacity = 0;
+    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinca = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); } });
+  cv.addEventListener("pointermove", e => {
+    if (ptrs.has(e.pointerId)) {
+      const p = ptrs.get(e.pointerId);
+      if (ptrs.size === 2) { ptrs.set(e.pointerId, e); const [a, b] = [...ptrs.values()], d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); G.alvo.z = clamp(G.alvo.z * d / (pinca || d), .7, 3.2); pinca = d; return; }
+      const dx = e.clientX - p.clientX, dy = e.clientY - p.clientY, k = .006 / G.z; mov += Math.abs(dx) + Math.abs(dy);
+      G.alvo.ry += dx * k; G.alvo.rx = clamp(G.alvo.rx + dy * k, -1.55, 1.55); G.ry = G.alvo.ry; G.rx = G.alvo.rx; ptrs.set(e.pointerId, e); G.ocioso = performance.now() + 3500;
+    } else {
+      const p = pinEm(e), tip = $("tipGlobo"); G.hover = p ? p.l.id : null; cv.classList.toggle("pin", !!p);
+      if (p) { tip.style.display = "block"; tip.style.left = e.clientX + 14 + "px"; tip.style.top = e.clientY + 12 + "px"; tip.textContent = nomeLocal(p.l); } else tip.style.display = "none";
+    }
+  });
+  const soltar = e => { ptrs.delete(e.pointerId); if (!ptrs.size) { G.arrastando = false; cv.classList.remove("arrasta"); }
+    if (e.type === "pointerup" && mov < 6 && !ptrs.size) { const p = pinEm(e); if (p) abrirPainelLocal(p.l); } };
+  cv.addEventListener("pointerup", soltar); cv.addEventListener("pointercancel", soltar);
+  cv.addEventListener("wheel", e => { e.preventDefault(); G.alvo.z = clamp(G.alvo.z * (1 - e.deltaY * .0012), .7, 3.2); G.ocioso = performance.now() + 3500; }, { passive: false });
+  $("iniFechar").onclick = fecharPainelLocal;
+  $("iniComecar").onclick = fecharInicio;
+  $("iniPolo").onclick = () => { fecharPainelLocal(); G.alvo.rx = -1.32; G.alvo.z = 1.9; G.ocioso = performance.now() + 60000; };
+  $("verLua").onclick = abrirInicio;
+  addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("intro")) { if ($("iniPainel").classList.contains("on")) fecharPainelLocal(); } });
+})();
+
+/* =========================================================================
+   Boas-vindas e tour guiado
+   ========================================================================= */
+const PASSOS_PT = [
+  ["#resultado", "Quem ganha?", "Quando há dois ou mais planos, este placar diz na hora qual é o melhor."],
+  [".card", "Um plano de pouso", "Cada cartão é um plano: um lugar na Lua e uma data. Troque o lugar na lista e a data no calendário."],
+  [".card .status", "O veredito resume tudo", "Verde = bom lugar para pousar. Amarelo = tem um problema. Vermelho = não recomendado. Embaixo aparece o motivo."],
+  [".card .slip", "E se o foguete atrasar?", "Lançamentos atrasam o tempo todo. Clique em \"+1 semana\" ou \"+1 mês\" e veja o antes e depois: se o local continua bom ou se o atraso estraga o plano. A barra faz o ajuste dia a dia."],
+  [".card .agora", "Sol e Terra agora", "Sol = energia para os painéis. Terra = a antena consegue falar com a gente. Embaixo de cada um aparece quanto tempo falta para mudar."],
+  [".card .metrics", "Resumo dos primeiros dias", "Os círculos mostram quanto do tempo, nos dias depois do pouso, o lugar tem sol e contato com a Terra. Quanto mais cheio, melhor."],
+  ["#add", "Compare lugares", "Adicione até 4 planos para comparar lado a lado. Clique num cartão para colocá-lo em destaque nas partes de baixo."],
+  ["#mapa", "O mapa do polo sul", "Visto de cima, com o polo no centro. Cada bolinha é um local, verde, amarela ou vermelha conforme a data do seu plano. Clique numa bolinha para testar aquele local."],
+  ["#pano", "O céu visto do local", "Imagine que você está em pé no local e gira 360°. Cinza é o chão e as montanhas. A bola amarela é o Sol e a azul é a Terra. Atrás do cinza, estão escondidos."],
+  ["#play", "Veja o tempo passar", "Aperte Animar ou arraste a barra. Repare como no polo sul o Sol dá a volta inteira no horizonte, sempre rente ao chão."],
+  ["#relevoLbl", "As montanhas fazem diferença", "Desmarque para ver como seria numa Lua lisa, sem montanhas. A diferença mostra por que o relevo importa tanto."],
+  ["#tl", "Os dias depois do pouso", "Amarelo = tem sol. Azul = dá para falar com a Terra. Escuro = não tem. Clique para pular para qualquer momento."],
+  ["#solgraf", "A altura do Sol", "A linha amarela é a altura do Sol. O cinza são as montanhas na direção dele. Linha acima do cinza = luz nos painéis. No polo, o Sol mal passa de 1 ou 2 graus."],
+  ["#heat", "O melhor dia para pousar", "Um calendário: cada quadradinho é um dia possível. Verde claro = ótimo, escuro = ruim. Clique para escolher o dia."],
+  [".hdr-right .seg:not(.lang)", "Dois jeitos de ver", "Explorar: explicações simples, para escolas e curiosos. Planejar: números detalhados e regras da missão, para engenheiros."],
+  ["#verLua", "A Lua em 3D", "Este botão volta para a Lua girando, onde dá para clicar nos locais e conhecer a história de cada um."],
+  ["#ajuda", "Pronto!", "Clique em \"Como usar\" sempre que quiser rever este tour. O botão EN/PT troca o idioma."],
+];
+const PASSOS_EN = [
+  ["#resultado", "Who wins?", "When there are two or more plans, this scoreboard tells you right away which one is best."],
+  [".card", "A landing plan", "Each card is a plan: a place on the Moon and a date. Change the place in the list and the date in the calendar."],
+  [".card .status", "The verdict sums it up", "Green = good place to land. Yellow = one problem. Red = not recommended. The reason appears underneath."],
+  [".card .slip", "What if the launch slips?", "Launches get delayed all the time. Click \"+1 week\" or \"+1 month\" and see the before and after: whether the site is still good or the delay ruins the plan. The slider adjusts day by day."],
+  [".card .agora", "Sun and Earth right now", "Sun = power for the panels. Earth = the antenna can talk to us. Under each one you see how long until it changes."],
+  [".card .metrics", "Summary of the first days", "The rings show how much of the time, in the days after landing, the site has sunlight and contact with Earth. The fuller, the better."],
+  ["#add", "Compare places", "Add up to 4 plans to compare side by side. Click a card to highlight it in the sections below."],
+  ["#mapa", "The south pole map", "Seen from above, with the pole in the center. Each dot is a site, green, yellow or red for your plan's date. Click a dot to try that site."],
+  ["#pano", "The sky seen from the site", "Imagine standing at the site and turning 360°. Gray is the ground and mountains. The yellow ball is the Sun and the blue one is Earth. Behind the gray, they are hidden."],
+  ["#play", "Watch time go by", "Press Animate or drag the bar. Notice how at the south pole the Sun circles the whole horizon, always skimming the ground."],
+  ["#relevoLbl", "Mountains make a difference", "Uncheck to see what it would be like on a smooth Moon, without mountains. The difference shows why terrain matters so much."],
+  ["#tl", "The days after landing", "Yellow = sunlight. Blue = Earth in view. Dark = none. Click to jump to any moment."],
+  ["#solgraf", "The height of the Sun", "The yellow line is the Sun's height. The gray is the mountains in its direction. Line above the gray = light on the panels. At the pole, the Sun barely gets past 1 or 2 degrees."],
+  ["#heat", "The best day to land", "A calendar: each square is a possible day. Light green = great, dark = poor. Click to pick the day."],
+  [".hdr-right .seg:not(.lang)", "Two ways to view", "Explore: simple explanations, for schools and curious minds. Plan: detailed numbers and mission rules, for engineers."],
+  ["#verLua", "The 3D Moon", "This button takes you back to the spinning Moon, where you can click the sites and learn the story of each one."],
+  ["#ajuda", "All set!", "Click \"How to use\" anytime to see this tour again. The EN/PT button switches the language."],
+];
+const PASSOS = { get length() { return PASSOS_PT.length; } };
+const passoAtual = k => (LANG === "en" ? PASSOS_EN : PASSOS_PT)[k];
+let passo = 0;
+function posicionarTour() {
+  const [sel, tit, txt] = passoAtual(passo);
+  const alvo = document.querySelector(sel);
+  const hl = $("tourHl"), bx = $("tourBox");
+  $("tourT").textContent = tit; $("tourP").textContent = txt;
+  $("tourPg").textContent = T(`${passo + 1} de ${PASSOS.length}`, `${passo + 1} of ${PASSOS.length}`);
+  $("tourAnt").disabled = passo === 0;
+  $("tourProx").textContent = passo === PASSOS.length - 1 ? T("Concluir", "Finish") : T("Próximo", "Next");
+  if (!alvo) { hl.style.display = "none"; bx.style.left = "50%"; bx.style.top = "40%"; bx.style.transform = "translate(-50%,-50%)"; return; }
+  const r = alvo.getBoundingClientRect(), m = 6;
+  hl.style.display = "block";
+  Object.assign(hl.style, { left: r.left - m + "px", top: r.top - m + "px", width: r.width + 2 * m + "px", height: r.height + 2 * m + "px" });
+  bx.style.transform = "none";
+  const bw = bx.offsetWidth || 360, bh = bx.offsetHeight || 170, vw = innerWidth, vh = innerHeight;
+  let top = r.bottom + 14;
+  if (top + bh > vh - 10) top = r.top - bh - 14;
+  if (top < 10) top = Math.min(vh - bh - 10, Math.max(10, r.top + 20));
+  bx.style.top = top + "px"; bx.style.left = clamp(r.left, 10, vw - bw - 10) + "px";
+}
+function irPasso(n) {
+  passo = clamp(n, 0, PASSOS.length - 1);
+  const alvo = document.querySelector(passoAtual(passo)[0]);
+  if (alvo) alvo.scrollIntoView({ behavior: "smooth", block: "center" });
+  posicionarTour(); setTimeout(posicionarTour, 450);
+}
+function abrirTour() {
+  if (!document.body.classList.contains("exp")) $("mExp").click();
+  $("boas").classList.remove("on");
+  $("tourBack").classList.add("on"); $("tourBox").style.display = "block";
+  irPasso(0);
+}
+function fecharTour() {
+  $("tourBack").classList.remove("on"); $("tourBox").style.display = "none"; $("tourHl").style.display = "none";
+  try { localStorage.setItem("llsn_tour_visto", "1"); } catch {}
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+$("tourProx").onclick = () => passo === PASSOS.length - 1 ? fecharTour() : irPasso(passo + 1);
+$("tourAnt").onclick = () => irPasso(passo - 1);
+$("tourSair").onclick = fecharTour;
+$("tourBack").onclick = () => irPasso(passo + 1 < PASSOS.length ? passo + 1 : passo);
+addEventListener("keydown", e => {
+  if (!$("tourBack").classList.contains("on")) { if (e.key === "Escape") $("boas").classList.remove("on"); return; }
+  if (e.key === "Escape") fecharTour(); else if (e.key === "ArrowRight") $("tourProx").click(); else if (e.key === "ArrowLeft") irPasso(passo - 1);
+});
+addEventListener("scroll", () => { if ($("tourBack").classList.contains("on")) posicionarTour(); }, { passive: true });
+addEventListener("resize", () => { if ($("tourBack").classList.contains("on")) setTimeout(posicionarTour, 200); });
+$("ajuda").onclick = () => $("boas").classList.add("on");
+$("boasTour").onclick = abrirTour;
+$("boasPular").onclick = () => { $("boas").classList.remove("on"); try { localStorage.setItem("llsn_tour_visto", "1"); } catch {} };
+function mostrarBoasVindas() {
+  let visto = false; try { visto = localStorage.getItem("llsn_tour_visto") === "1"; } catch {}
+  if (!visto) $("boas").classList.add("on");
+}
+
+/* Troca de idioma */
+function trocarIdioma(l) {
+  if (l === LANG) return;
+  LANG = l; try { localStorage.setItem("llsn_lang", l); } catch {}
+  aplicarIdioma(); atualizarFonte(); $("play").textContent = textoPlay();
+  renderTudo();
+  if (document.body.classList.contains("intro")) { montarInicio(); if (G.sel) { const sl = local(G.sel); if (sl) abrirPainelLocal(sl); } }
+  if ($("tourBack").classList.contains("on")) posicionarTour();
+}
+document.querySelectorAll(".seg.lang button").forEach(b => b.addEventListener("click", () => trocarIdioma(b.dataset.l)));
+aplicarIdioma(); $("play").textContent = textoPlay();
+
+/* Início: tenta dados/app_dados.json (quando servido com um servidor local); se não houver, usa a demonstração. */
+(async function iniciar() {
+  try {
+    const r = await fetch("dados/app_dados.json", { cache: "no-store" });
+    if (!r.ok) throw 0;
+    carregarDados(await r.json());
+  } catch { carregarDados(dadosDemo()); }
+  abrirInicio();
+})();
+</script>
+</body>
+</html>

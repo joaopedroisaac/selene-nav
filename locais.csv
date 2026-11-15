@@ -1,0 +1,20 @@
+id,nome,lat,lon_leste,alt_km,categoria,observacao
+polo_sul,Polo Sul geográfico,-89.999,0.0,0.0,referencia,"Teste: Sol nunca passa de ~1,5°"
+shackleton,Cratera Shackleton (centro),-89.67,129.78,0.0,polo sul,"Fundo da cratera: com relevo, sombra permanente"
+art_cabeus_b,Artemis: Pico perto de Cabeus B,-82.3,306.0,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_haworth,Artemis: Haworth,-87.45,355.0,0.0,Artemis (regiões candidatas),Referência aproximada (cratera) - verificar
+art_malapert,Artemis: Maciço Malapert,-86.0,2.9,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_mouton_plat,Artemis: Planalto Mons Mouton,-85.4,35.0,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_mouton,Artemis: Mons Mouton,-84.6,31.3,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_nobile1,Artemis: Borda de Nobile 1,-84.8,48.0,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_nobile2,Artemis: Borda de Nobile 2,-85.6,60.0,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_gerlache2,Artemis: Borda de de Gerlache 2,-88.3,290.0,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+art_slater,Artemis: Planície Slater,-88.0,250.0,0.0,Artemis (regiões candidatas),Referência aproximada - verificar
+im2_athena,IM-2 Athena (Mons Mouton),-84.79,29.19,0.0,comercial/CLPS,Coordenada aproximada - verificar
+im1_odysseus,IM-1 Odysseus (Malapert A),-80.13,1.44,0.0,comercial/CLPS,Coordenada aproximada - verificar
+chandrayaan3,Chandrayaan-3 Vikram (Índia),-69.373,32.319,0.0,outros países,
+change4,"Chang'e 4 (China, lado oculto)",-45.4446,177.5991,0.0,outros países,Teste: Terra nunca visível
+blue_ghost1,Blue Ghost M1 (Mare Crisium),18.56,61.81,0.0,comercial/CLPS,Coordenada aproximada - verificar
+apollo11,Apollo 11,0.6741,23.473,0.0,Apollo,Teste: Terra sempre visível
+apollo15,Apollo 15,26.1322,3.6339,0.0,Apollo,
+apollo17,Apollo 17,20.1908,30.7717,0.0,Apollo,
