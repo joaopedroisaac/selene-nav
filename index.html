@@ -1927,8 +1927,9 @@ aplicarIdioma(); $("play").textContent = textoPlay();
 /* Início: tenta dados/app_dados.json (quando servido com um servidor local); se não houver, usa a demonstração. */
 (async function iniciar() {
   try {
-    const r = await fetch("dados/app_dados.json", { cache: "no-store" });
-    if (!r.ok) throw 0;
+    let r = await fetch("dados/app_dados.json", { cache: "no-store" }).catch(() => null);
+    if (!r || !r.ok) r = await fetch("app_dados.json", { cache: "no-store" }).catch(() => null);
+    if (!r || !r.ok) throw 0;
     carregarDados(await r.json());
   } catch { carregarDados(dadosDemo()); }
   abrirInicio();
