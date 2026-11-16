@@ -163,6 +163,7 @@ body.plan .only-exp{display:none!important}
 .calhead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 .escala{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .escala i{width:16px;height:12px;border-radius:3px;display:inline-block}
+.seg.lang{display:none!important}
 .seg.lang button{padding:5px 10px;font-weight:600;font-size:12.5px}
 .anos .btn.on{background:#22304a;border-color:#3a5288}
 .atraso{background:#0c1322;border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:8px}
@@ -236,6 +237,9 @@ footer a{color:var(--accent)}
 .marca{font:800 26px/1 var(--disp);letter-spacing:-.03em}
 .marca::after{content:"";display:inline-block;width:.32em;height:.32em;border-radius:50%;background:var(--sun);margin-left:.08em;vertical-align:.05em}
 .ini-marca-txt{font-size:22px;color:var(--ink);opacity:.92;margin-bottom:6px}
+.sel-plan{width:100%;border-radius:99px;padding:10px 14px;font:700 14px "Figtree",sans-serif;border:1px solid #ffffff3d;background:transparent;color:#eef1f7;cursor:pointer;margin-top:2px}
+.sel-plan:hover{background:#ffffff12;border-color:#ffffff80}
+.sel-plan.on{background:#eef1f7;color:#05070d;border-color:transparent;cursor:default}
 /* ==== v8: identidade visual do grupo (Navegador de Pousos Lunares) ==== */
 :root{
   --bg:#05070d; --ink:#eef1f7; --text:#eef1f7; --mute:#9aa4b8; --muted:#9aa4b8; --line:#ffffff1f;
@@ -290,7 +294,7 @@ main > .intro + section.panel, main > .warnbox + .intro + section.panel{border-t
 /* cartões */
 .cards{gap:18px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;gap:14px}
-.card.ativo{border-color:#ffffff59;box-shadow:none}
+.card.ativo{border-color:#eef1f7;box-shadow:0 0 0 1px #eef1f7}
 .card .tag{background:var(--ink);color:#05070d;font:700 11px "Figtree",sans-serif;padding:2px 9px}
 .card select,.card input[type=date],.ctrl select,.ctrl input[type=number]{background:#111827;border:1px solid var(--line);border-radius:8px;font:500 14px "Figtree",sans-serif}
 .card select{font-weight:600;font-size:15px}
@@ -409,7 +413,7 @@ footer a{color:var(--ink)}
     <div class="sec-h">
       <h2><span class="num">1</span><span data-i18n="s1.h">Escolha onde e quando pousar</span></h2>
     </div>
-    <p class="oque" data-i18n="s1.p">Cada cartão é um <b>plano de pouso</b>: um lugar na Lua e uma data. Compare até 4 planos. O cartão com borda clara é o que aparece nas partes 2 e 4.</p>
+    <p class="oque" data-i18n="s1.p">Cada cartão é um <b>plano de pouso</b>: um lugar na Lua e uma data. Compare até 4 planos. Clique em <b>Selecionar este plano</b> para vê-lo nas partes 2 a 4.</p>
     <div id="resultado"></div>
     <div class="cards" id="cards"></div>
   </section>
@@ -592,7 +596,7 @@ const DIA_MS = 86400e3, HORA_MS = 3600e3;
 const $ = id => document.getElementById(id);
 /* ---------- Idioma (inglês é o padrão) ---------- */
 let LANG = "en";
-try { const g = localStorage.getItem("llsn_lang"); if (g === "pt" || g === "en") LANG = g; } catch {}
+/* Versão de entrega: somente inglês. */
 const T = (pt, en) => LANG === "en" ? en : pt;
 const LOC = () => LANG === "en" ? "en-US" : "pt-BR";
 const fmt = (x, d = 0) => Number(x).toLocaleString(LOC(), { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -615,7 +619,7 @@ const I18N = {
   "c2": "<b>Earth in the sky = communication</b><span>The antenna has to \"see\" Earth to send and receive messages.</span>",
   "c3": "<b>Mountains = shadow</b><span>At the south pole the Sun skims the ground. A single mountain can hide both the Sun and Earth.</span>",
   "s1.h": "Choose where and when to land",
-  "s1.p": "Each card is a <b>landing plan</b>: a place on the Moon and a date. Compare up to 4 plans. The card with the light border is the one shown in parts 2 and 4.",
+  "s1.p": "Each card is a <b>landing plan</b>: a place on the Moon and a date. Compare up to 4 plans. Press <b>Select this plan</b> to show it in parts 2 to 4 below.",
   "map.p": "Seen from above, with the south pole in the center. Each dot is a landing site, colored by its verdict on the date of the highlighted plan: <b style=\"color:var(--ok)\">green = good</b>, <b style=\"color:var(--warn)\">yellow = caution</b>, <b style=\"color:var(--bad)\">red = not recommended</b>. Click a dot or the list to switch the plan's site. It is the fastest way to find an alternative in the same region.",
   "relevo": "Include the mountains (real terrain)",
   "s2.p": "Imagine standing at the landing site and turning a full 360°. This strip shows everything you would see: <b>the ground and mountains in gray</b>, the sky in black, the <b>Sun</b> (yellow ball) and <b>Earth</b> (blue ball). When a ball is behind the gray, it is hidden. The dotted lines show the path each one takes over the next days.",
@@ -922,9 +926,9 @@ function textoAgora(l, i) {
                    : (dT == null ? T("A Terra não aparece até o fim dos dados", "Earth does not appear before the end of the data") : T(`A Terra volta a aparecer em <b>${dur(dT)}</b>`, `Earth reappears in <b>${dur(dT)}</b>`));
   const curto = h => h == null ? T("até o fim dos dados", "beyond the data") : dur(h);
   const solC = f >= 0.999 ? T("Tem sol", "Sunlight") : f > 0 ? T("Sol meio escondido", "Sun partly hidden") : (el > -SOL_R && S.relevo) ? T("Montanha tampa o Sol", "Mountain blocks the Sun") : T("Noite", "Night");
-  const solS = f > 0 ? T(`acaba em ${curto(dS)}`, `ends in ${curto(dS)}`) : T(`volta em ${curto(dS)}`, `returns in ${curto(dS)}`);
+  const solS = dS == null ? (f > 0 ? T("até o fim dos dados", "lasts past the end of the data") : T("não volta nos dados", "not back before the data ends")) : (f > 0 ? T(`acaba em ${dur(dS)}`, `ends in ${dur(dS)}`) : T(`volta em ${dur(dS)}`, `returns in ${dur(dS)}`));
   const terC = te ? T("Falando com a Terra", "Talking to Earth") : terraVisivel(tel, 0) ? T("Montanha esconde a Terra", "Mountain hides Earth") : (tel < -12 ? T("Terra nunca aparece", "Earth never appears") : T("Terra fora de vista", "Earth out of view"));
-  const terS = te ? T(`acaba em ${curto(dT)}`, `ends in ${curto(dT)}`) : (tel < -12 ? T("lado oculto da Lua", "far side of the Moon") : T(`volta em ${curto(dT)}`, `returns in ${curto(dT)}`));
+  const terS = tel < -12 && !te ? T("lado oculto da Lua", "far side of the Moon") : dT == null ? (te ? T("até o fim dos dados", "lasts past the end of the data") : T("não volta nos dados", "not back before the data ends")) : (te ? T(`acaba em ${dur(dT)}`, `ends in ${dur(dT)}`) : T(`volta em ${dur(dT)}`, `returns in ${dur(dT)}`));
   return { solT, solD, solCd, terT, terD, terCd, f, te, solC, solS, terC, terS };
 }
 function frase(l, m) {
@@ -1000,7 +1004,6 @@ function renderCards() {
     const motivo = a.falhas.length ? a.falhas[0] + (a.falhas.length > 1 ? T(` (e mais ${a.falhas.length - 1})`, ` (and ${a.falhas.length - 1} more)`) : "") : T("Sol e contato com a Terra suficientes", "Enough sunlight and contact with Earth");
     const aprox = l.custom ? `<div class="hint">${T("Estimativa aproximada: modelo simplificado, sem relevo.", "Rough estimate: simplified model, no terrain.")}</div>` : "";
     return `<div class="card${k === S.ativo ? " ativo" : ""}" data-k="${k}">
-      ${k === S.ativo ? `<span class="tag">${T("em destaque abaixo", "shown below")}</span>` : ""}
       <div class="row"><select data-f="local" aria-label="${T("Local de pouso", "Landing site")}">${opcoesLocais(c.local)}</select>
         ${S.cenarios.length > 1 ? `<button class="btn small" data-f="rm" title="${T("Remover plano", "Remove plan")}" aria-label="${T("Remover plano", "Remove plan")}">✕</button>` : ""}</div>
       <div class="row"><span class="lbl-dt">${T("Data do pouso", "Landing date")}</span><input type="date" data-f="data" value="${isoDia(c.base)}" min="${isoDia(S.t0)}" max="${isoDia(msDe(S.n - 1))}"></div>
@@ -1028,6 +1031,7 @@ function renderCards() {
       ${aprox}
       <div class="frase only-exp">${frase(l, m)}</div>
       ${cortada ? `<div class="hint">${T("Os dados acabam antes do fim do período analisado.", "The data ends before the end of the analyzed period.")}</div>` : ""}
+      <button class="sel-plan${k === S.ativo ? " on" : ""}" data-f="sel" aria-pressed="${k === S.ativo}">${k === S.ativo ? T("✓ Selecionado: mostrado abaixo", "✓ Selected: shown below") : T("Selecionar este plano", "Select this plan")}</button>
     </div>`;
   }).join("") + (S.cenarios.length < 4 ? `<button class="addcard" id="add">${T("+ Comparar com outro plano", "+ Compare with another plan")}</button>` : "");
 
@@ -1041,6 +1045,7 @@ function renderCards() {
     el.querySelector('[data-f="data"]').addEventListener("change", e => {
       const ms = Date.parse(e.target.value + "T00:00:00Z"); if (!isNaN(ms)) { c.base = ms; c.slip = 0; S.ativo = k; renderTudo(); }
     });
+    el.querySelector('[data-f="sel"]').addEventListener("click", () => { if (S.ativo !== k) { S.ativo = k; renderTudo(); } });
     el.querySelector('[data-f="slip"]').addEventListener("input", e => { c.slip = +e.target.value; S.ativo = k; renderTudo(); });
     el.querySelectorAll('[data-f="atr"]').forEach(b => b.addEventListener("click", () => { c.slip = +b.dataset.d; S.ativo = k; renderTudo(); }));
     const rm = el.querySelector('[data-f="rm"]');
@@ -1838,7 +1843,7 @@ const PASSOS_PT = [
 ];
 const PASSOS_EN = [
   ["#resultado", "Who wins?", "When there are two or more plans, this scoreboard tells you right away which one is best."],
-  [".card", "A landing plan", "Each card is a plan: a place on the Moon and a date. Change the place in the list and the date in the calendar."],
+  [".card", "A landing plan", "Each card is a plan: a place on the Moon and a date. Change the place in the list and the date in the calendar. Press \"Select this plan\" to show it in the sections below."],
   [".card .status", "The verdict sums it up", "Green = good place to land. Yellow = one problem. Red = not recommended. The reason appears underneath."],
   [".card .slip", "What if the launch slips?", "Launches get delayed all the time. Click \"+1 week\" or \"+1 month\" and see the before and after: whether the site is still good or the delay ruins the plan. The slider adjusts day by day."],
   [".card .agora", "Sun and Earth right now", "Sun = power for the panels. Earth = the antenna can talk to us. Under each one you see how long until it changes."],
@@ -1853,7 +1858,7 @@ const PASSOS_EN = [
   ["#heat", "The best day to land", "A calendar: each square is a possible day. Light green = great, dark = poor. Click to pick the day."],
   [".hdr-right .seg:not(.lang)", "Two ways to view", "Explore: simple explanations, for schools and curious minds. Plan: detailed numbers and mission rules, for engineers."],
   ["#verLua", "The 3D Moon", "This button takes you back to the spinning Moon, where you can click the sites and learn the story of each one."],
-  ["#ajuda", "All set!", "Click \"How to use\" anytime to see this tour again. The EN/PT button switches the language."],
+  ["#ajuda", "All set!", "Click \"How to use\" anytime to see this tour again."],
 ];
 const PASSOS = { get length() { return PASSOS_PT.length; } };
 const passoAtual = k => (LANG === "en" ? PASSOS_EN : PASSOS_PT)[k];
