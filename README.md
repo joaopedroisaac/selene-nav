@@ -5,7 +5,7 @@
 Built for the **NASA Space Apps Challenge 2026**, challenge **Lunar Landing Site Navigator**.
 
 🔗 **Live demo:** https://joaopedroisaac.github.io/selene-nav/ (opens in any browser, no install or login)
-🎬 **30-second video:** `[ADD VIDEO LINK]`
+🎬 **30-second video:** https://www.youtube.com/watch?v=PI8BOY8FTPk&feature=youtu.be
 
 ---
 
