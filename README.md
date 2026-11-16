@@ -6,7 +6,6 @@ Built for the **NASA Space Apps Challenge 2026**, challenge **Lunar Landing Site
 
 🔗 **Live demo:** https://joaopedroisaac.github.io/selene-nav/ (opens in any browser, no install or login)
 🎬 **30-second video:** `[ADD VIDEO LINK]`
-🌐 Language: English by default, Portuguese via the EN/PT switch.
 
 ---
 
@@ -125,7 +124,7 @@ The `dem/` folder is not included in this repository because the files are too l
 | `gerar_mapa.py` | Step 3: renders the shaded south pole map |
 | `exportar_app.py` | Step 4: bundles everything for the app and runs the validation tests |
 
-The script and variable names are in Portuguese because our team is from Brazil. The app itself is in English, with Portuguese available.
+The script and variable names are in Portuguese because our team is from Brazil. The app itself is in English.
 
 ## Use of AI
 
@@ -133,7 +132,7 @@ Our team used an AI assistant (Claude, by Anthropic) throughout the project:
 
 - **Research:** reading and summarizing the challenge, its resources and the NASA datasets.
 - **Code:** the AI wrote most of the Python data pipeline and the web app, based on our requirements and feedback.
-- **Design and text:** interface design iterations, plain-language explanations, the guided tour, English/Portuguese translations, this README and the video script.
+- **Design and text:** interface design iterations, plain-language explanations, the guided tour, English text, this README and the video script.
 
 **What the team did:** chose the challenge and the product direction, named the project, decided which features to build and which to cut, reviewed every version and asked for changes, ran the full pipeline with real NASA data (JPL Horizons and LRO LOLA), checked the validation results, tested the app, published it and produced the video.
 
