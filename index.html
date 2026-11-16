@@ -269,6 +269,7 @@ main > .intro + section.panel, main > .warnbox + .intro + section.panel{border-t
 .btn.small{padding:6px 12px;font-size:13px}
 .btn.primary{background:var(--ink);color:#05070d;border-color:transparent}
 .btn.primary:hover{background:#fff}
+.btn:disabled{opacity:.45;cursor:progress}
 .btn.grande{padding:11px 20px;font-size:15px;font-weight:700}
 /* abas Explorar / Planejar (estilo de abas sublinhadas) */
 .seg:not(.lang){background:none;border:0;border-radius:0;padding:0;gap:2px}
@@ -381,7 +382,7 @@ footer a{color:var(--ink)}
 @media (max-width:640px){header{padding:16px 18px}main{padding:6px 18px 70px}}
 </style>
 </head>
-<body class="exp">
+<body class="exp intro">
 <header>
   <div class="brand">
     
@@ -534,7 +535,7 @@ footer a{color:var(--ink)}
     <div class="marca ini-marca-txt">Selene Nav</div>
     <h1 data-i18n="ini.h">Onde pousar na Lua?</h1>
     <p data-i18n="ini.p">Gire a Lua e clique num local. Veja a história dele e descubra se, na data escolhida, teria <b>sol para gerar energia</b> e <b>a Terra à vista para comunicação</b>.</p>
-    <div class="row"><button class="btn primary grande" id="iniComecar" data-i18n="ini.comecar">Começar a planejar</button><button class="btn grande" id="iniPolo" data-i18n="ini.polo">Ir para o polo sul</button></div>
+    <div class="row"><button class="btn primary grande" id="iniComecar" data-i18n="ini.comecar" disabled>Começar a planejar</button><button class="btn grande" id="iniPolo" data-i18n="ini.polo" disabled>Ir para o polo sul</button></div>
     <div class="ini-leg" id="iniLeg"></div>
   </div>
   <div class="ini-dica" id="iniDica" data-i18n="ini.dica">Arraste para girar · role ou use dois dedos para aproximar</div>
@@ -1674,6 +1675,7 @@ function geometriaTela(cv) {
   return { W, H: Hh, cx, cy, R };
 }
 function pinsTela(geo) {
+  if (!S.D) return [];
   const m = matriz(G.rx, G.ry), out = [];
   for (const l of S.D.locais) {
     const la = l.lat * RAD, lo = l.lon_leste * RAD;
@@ -1784,6 +1786,8 @@ function montarInicio() {
 }
 function abrirInicio() {
   if (!G.tex) G.tex = texturaLua();
+  $("iniComecar").disabled = false; $("iniPolo").disabled = false;
+  if (G.carregando) { G.carregando = false; aplicarIdioma(); }
   montarInicio();
   document.body.classList.add("intro"); G.sujo = true;
   if (!G.raf) G.raf = requestAnimationFrame(laco);
@@ -1928,6 +1932,11 @@ function trocarIdioma(l) {
 }
 document.querySelectorAll(".seg.lang button").forEach(b => b.addEventListener("click", () => trocarIdioma(b.dataset.l)));
 aplicarIdioma(); $("play").textContent = textoPlay();
+
+/* A Lua aparece imediatamente; os dados chegam depois */
+G.carregando = true;
+$("iniDica").textContent = "Loading NASA data…";
+try { G.tex = texturaLua(); G.raf = requestAnimationFrame(laco); } catch (e) {}
 
 /* Início: tenta dados/app_dados.json (quando servido com um servidor local); se não houver, usa a demonstração. */
 (async function iniciar() {
