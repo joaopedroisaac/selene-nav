@@ -1513,6 +1513,7 @@ $("exportar").onclick = async () => {
 };
 function atualizarFonte() {
   const demo = S.D.meta.demo, b = $("fonteBadge");
+  const lblCarregar = $("arquivo").closest("label"); if (lblCarregar) lblCarregar.style.display = demo ? "" : "none";
   b.querySelector(".dot").style.background = demo ? "var(--warn)" : "var(--ok)";
   b.querySelector("span:last-child").textContent = demo ? T("Dados de demonstração", "Demo data") : T("Dados: JPL Horizons + LOLA", "Data: JPL Horizons + LOLA");
   const av = $("avisoDemo");
